@@ -1,0 +1,320 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ---------- Members & Executives ----------
+
+model Member {
+  id                  String    @id @default(cuid())
+  slug                String    @unique
+  firstName           String
+  lastName             String
+  photoUrl            String?
+  bio                 String?
+  phone               String?
+  email               String?
+  whatsapp            String?
+
+  // Birthday - month/day only, no year required
+  birthMonth          Int?      // 1-12
+  birthDay            Int?      // 1-31
+
+  joinedDate          DateTime?
+  isActive            Boolean   @default(true)
+
+  businesses          Business[]
+  executivePositions  ExecutivePosition[]
+  rosterEntries       RosterEntry[]
+
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([birthMonth, birthDay])
+}
+
+// A member can run more than one business (e.g. car dealer AND hotelier) —
+// each is its own directory-searchable listing rather than a single field on Member.
+model Business {
+  id           String   @id @default(cuid())
+  member       Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId     String
+  name         String
+  category     String
+  description  String?
+  phone        String?
+  website      String?
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([category])
+  @@index([memberId])
+}
+
+enum ExecutiveRole {
+  PRESIDENT
+  VICE_PRESIDENT
+  SECRETARY
+  SOCIAL_SECRETARY
+  ASSISTANT_SECRETARY
+  TREASURER
+  FINANCIAL_SECRETARY
+  ASSISTANT_FINANCIAL_SECRETARY
+  CHIEF_PROVOST
+  LEGAL_ADVISER
+  WELFARE
+  PRO
+  ETHICS_AND_PRIVILEGES_COMMISSION
+}
+
+model ExecutivePosition {
+  id          String        @id @default(cuid())
+  role        ExecutiveRole
+  member      Member        @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId    String
+  termStart   DateTime
+  termEnd     DateTime?
+  isCurrent   Boolean       @default(true)
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([role, isCurrent])
+}
+
+model Founder {
+  id        String   @id @default(cuid())
+  name      String
+  title     String?
+  photoUrl  String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model Milestone {
+  id          String   @id @default(cuid())
+  year        Int
+  title       String
+  description String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
+// ---------- News / Blog / Announcements ----------
+
+enum PostCategory {
+  NEWS
+  ANNOUNCEMENT
+  EDITORIAL
+  NOTICE
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model Post {
+  id            String       @id @default(cuid())
+  slug          String       @unique
+  title         String
+  excerpt       String?
+  content       String
+  coverImageUrl String?
+  youtubeUrl    String?
+  category      PostCategory
+  status        PostStatus   @default(DRAFT)
+  authorName    String
+  publishedAt   DateTime?
+  views         Int          @default(0)
+  likes         Int          @default(0)
+
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([category, status])
+  @@index([publishedAt])
+}
+
+// ---------- Calendar ----------
+
+enum EventType {
+  MEETING
+  BIRTHDAY
+  HOLIDAY
+  DUES
+  OTHER
+}
+
+model CalendarEvent {
+  id          String    @id @default(cuid())
+  title       String
+  type        EventType
+  date        DateTime
+  description String?
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([date])
+}
+
+// ---------- Roster of meeting hosts ----------
+
+model RosterEntry {
+  id           String   @id @default(cuid())
+  hosts        Member[]
+  meetingDate  DateTime
+  notes        String?
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([meetingDate])
+}
+
+// ---------- Achievements ----------
+
+model Achievement {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  year        Int
+  imageUrl    String?
+  order       Int      @default(0)
+
+  createdAt   DateTime @default(now())
+}
+
+// ---------- Gallery ----------
+
+enum GalleryMediaType {
+  PHOTO
+  VIDEO
+}
+
+model GalleryItem {
+  id            String           @id @default(cuid())
+  title         String
+  mediaType     GalleryMediaType
+  // Used for VIDEO (the YouTube link). PHOTO posts store their images in `photos`
+  // below instead — a post can carry more than one picture.
+  url           String?
+  thumbnailUrl  String?
+  eventType     String?
+  downloadable  Boolean          @default(true)
+  eventDate     DateTime?
+  photos        GalleryPhoto[]
+
+  createdAt     DateTime         @default(now())
+
+  @@index([eventType])
+}
+
+model GalleryPhoto {
+  id            String      @id @default(cuid())
+  galleryItem   GalleryItem @relation(fields: [galleryItemId], references: [id], onDelete: Cascade)
+  galleryItemId String
+  url           String
+  order         Int         @default(0)
+  createdAt     DateTime    @default(now())
+
+  @@index([galleryItemId])
+}
+
+// ---------- Enquiries ----------
+
+enum EnquiryStatus {
+  NEW
+  IN_PROGRESS
+  RESOLVED
+}
+
+model Enquiry {
+  id           String        @id @default(cuid())
+  name         String
+  email        String
+  phone        String?
+  subject      String?
+  message      String
+  status       EnquiryStatus @default(NEW)
+  readAt       DateTime?
+  archived     Boolean       @default(false)
+  assignedTo   AdminUser?    @relation(fields: [assignedToId], references: [id])
+  assignedToId String?
+
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([status])
+  @@index([archived])
+}
+
+// ---------- Homepage hero carousel ----------
+
+model HeroSlide {
+  id        String   @id @default(cuid())
+  imageUrl  String
+  caption   String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([order])
+}
+
+// ---------- Site content (editable static pages) ----------
+
+enum SitePage {
+  HOME
+  ABOUT
+  CONTACT
+}
+
+model SiteContent {
+  id        String   @id @default(cuid())
+  page      SitePage
+  section   String
+  content   Json
+  updatedAt DateTime @updatedAt
+
+  @@unique([page, section])
+}
+
+// ---------- Admin / Team management ----------
+
+enum AdminRole {
+  SUPER_ADMIN
+  CONTENT_MANAGER
+}
+
+enum AdminStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model AdminUser {
+  id                   String      @id @default(cuid())
+  name                 String
+  email                String      @unique
+  phone                String?
+  passwordHash         String
+  role                 AdminRole   @default(CONTENT_MANAGER)
+  status               AdminStatus @default(ACTIVE)
+
+  canPublishContent    Boolean     @default(false)
+  canViewEnquiries     Boolean     @default(false)
+  canAssignEnquiries   Boolean     @default(false)
+  canViewAnalytics     Boolean     @default(false)
+
+  lastActiveAt         DateTime?
+  enquiries            Enquiry[]
+
+  createdAt            DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+}

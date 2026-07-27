@@ -1,0 +1,83 @@
+import type { Metadata } from "next";
+import { prisma } from "@damc/db";
+import { Container, SectionHeading, Reveal, Card, ImageWithSkeleton } from "@damc/ui";
+import { ROLE_ORDER, ROLE_LABELS } from "@/lib/labels";
+import { optimizedImageUrl } from "@/lib/cloudinary";
+
+export const metadata: Metadata = {
+  title: "Executives & Board of Trustees",
+  description: "Meet the elected executives and board of trustees of the Dignified Articulate Men's Club.",
+};
+
+export const revalidate = 3600;
+
+export default async function ExecutivesPage() {
+  const positions = await prisma.executivePosition.findMany({
+    where: { isCurrent: true },
+    include: { member: { include: { businesses: true } } },
+  });
+
+  const byRole = new Map(positions.map((p) => [p.role, p]));
+  const ordered = ROLE_ORDER.map((role) => byRole.get(role)).filter(
+    (p): p is NonNullable<typeof p> => Boolean(p)
+  );
+
+  return (
+    <>
+      <section className="border-b border-ink/8 bg-parchment/60 py-20 dark:border-parchment/10 dark:bg-ink-soft/30 sm:py-28">
+        <Container className="max-w-2xl text-center">
+          <Reveal>
+            <span className="text-xs font-bold uppercase tracking-[0.14em] text-gold-deep dark:text-gold-bright">
+              Leadership
+            </span>
+            <h1 className="mt-3 text-balance font-display text-4xl font-semibold text-ink dark:text-parchment sm:text-5xl">
+              Executives &amp; Board of Trustees
+            </h1>
+            <p className="mt-5 text-lg text-bronze dark:text-parchment/70">
+              The current executive council elected to steward the club's affairs.
+            </p>
+          </Reveal>
+        </Container>
+      </section>
+
+      <section className="py-20 sm:py-28">
+        <Container>
+          {ordered.length === 0 ? (
+            <p className="text-center text-bronze dark:text-parchment/70">
+              Executive positions will appear here once assigned in the admin dashboard.
+            </p>
+          ) : (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {ordered.map((position, i) => (
+                <Reveal key={position.id} delay={i * 0.05}>
+                  <Card className="overflow-hidden text-center transition-transform duration-300 hover:-translate-y-1">
+                    <div className="relative h-56 w-full overflow-hidden">
+                      <ImageWithSkeleton
+                        src={optimizedImageUrl(position.member.photoUrl ?? "/placeholders/member-avatar.svg", 700)}
+                        alt={`${position.member.firstName} ${position.member.lastName}`}
+                        className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                      />
+                    </div>
+                    <div className="p-5">
+                      <div className="text-xs font-bold uppercase tracking-wide text-gold-deep dark:text-gold-bright">
+                        {ROLE_LABELS[position.role]}
+                      </div>
+                      <div className="mt-1.5 font-display text-lg font-semibold text-ink dark:text-parchment">
+                        {position.member.firstName} {position.member.lastName}
+                      </div>
+                      {position.member.businesses[0] && (
+                        <div className="mt-1 text-sm text-bronze dark:text-parchment/60">
+                          {position.member.businesses[0].category}
+                        </div>
+                      )}
+                    </div>
+                  </Card>
+                </Reveal>
+              ))}
+            </div>
+          )}
+        </Container>
+      </section>
+    </>
+  );
+}

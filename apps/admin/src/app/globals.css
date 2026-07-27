@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-parchment-paper text-ink dark:bg-ink dark:text-parchment antialiased;
+  }
+
+  /* Smooth out the light/dark toggle. Lives in the base layer so any component's
+     own transition-* utility (higher-specificity layer) still wins where it matters —
+     this only fills in the elements that don't declare one. */
+  *,
+  *::before,
+  *::after {
+    transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+    transition-timing-function: ease;
+    transition-duration: 200ms;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+  }
+}
