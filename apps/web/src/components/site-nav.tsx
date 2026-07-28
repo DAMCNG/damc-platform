@@ -67,11 +67,8 @@ export function SiteNav() {
               </motion.div>
             )}
           </span>
-          <span className="hidden sm:flex sm:flex-col sm:leading-tight">
-            <span className="text-gold-deep dark:text-gold-bright">DAMC</span>
-            <span className="text-[10px] font-normal tracking-wide text-bronze">
-              Dignified Articulate Men&rsquo;s Club
-            </span>
+          <span className="hidden text-sm font-semibold tracking-wide text-ink dark:text-parchment sm:block">
+            Dignified Articulate Men&rsquo;s Club
           </span>
         </Link>
 

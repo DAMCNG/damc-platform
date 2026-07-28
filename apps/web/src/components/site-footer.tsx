@@ -19,7 +19,7 @@ export function SiteFooter() {
       <Container className="grid gap-10 py-16 sm:grid-cols-2 lg:grid-cols-4">
         <div className="lg:col-span-2">
           <div className="flex items-center gap-2.5">
-            <BrandMark size={42} />
+            <BrandMark size={50} />
             <span className="font-display text-xl font-semibold text-gold-bright">DAMC</span>
           </div>
           <p className="mt-3 max-w-sm text-sm text-parchment/70">
