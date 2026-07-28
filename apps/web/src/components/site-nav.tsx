@@ -3,9 +3,10 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { cn, buttonVariants, BrandMark, ThemeToggle } from "@damc/ui";
+import { useHeroLogo } from "@/components/hero-logo-context";
 
 const NAV_LINKS = [
   { href: "/about", label: "About" },
@@ -23,6 +24,15 @@ export function SiteNav() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = React.useState(false);
   const [open, setOpen] = React.useState(false);
+  const { heroLogoVisible } = useHeroLogo();
+  const shouldReduceMotion = useReducedMotion();
+
+  const isHomepage = pathname === "/";
+  // On the homepage, the logo lives in the hero until the user scrolls past
+  // it — only then does it "arrive" in the header (see hero.tsx for the other
+  // half of this shared-layout animation). Every other page just shows it
+  // normally, since there's no hero copy to hand off from.
+  const showHeaderLogo = !isHomepage || !heroLogoVisible;
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -47,7 +57,16 @@ export function SiteNav() {
           href="/"
           className="flex items-center gap-2.5 font-display text-lg font-semibold text-ink transition-transform duration-300 hover:scale-[1.02] dark:text-parchment"
         >
-          <BrandMark size={44} className="flex-shrink-0" />
+          <span className="block h-11 w-11 flex-shrink-0">
+            {showHeaderLogo && (
+              <motion.div
+                layoutId="brand-logo"
+                transition={shouldReduceMotion ? { duration: 0 } : { type: "spring", stiffness: 260, damping: 28 }}
+              >
+                <BrandMark size={44} />
+              </motion.div>
+            )}
+          </span>
           <span className="hidden sm:flex sm:flex-col sm:leading-tight">
             <span className="text-gold-deep dark:text-gold-bright">DAMC</span>
             <span className="text-[10px] font-normal tracking-wide text-bronze">

@@ -3,6 +3,7 @@ import { Fraunces, Manrope } from "next/font/google";
 import { ThemeScript } from "@damc/ui";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
+import { HeroLogoProvider } from "@/components/hero-logo-context";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -50,8 +51,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeScript />
       </head>
       <body className="flex min-h-screen flex-col font-sans">
-        <SiteNav />
-        <main className="flex-1">{children}</main>
+        <HeroLogoProvider>
+          <SiteNav />
+          <main className="flex-1">{children}</main>
+        </HeroLogoProvider>
         <SiteFooter />
       </body>
     </html>

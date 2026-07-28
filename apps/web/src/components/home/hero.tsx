@@ -1,7 +1,12 @@
+"use client";
+
+import * as React from "react";
 import Link from "next/link";
+import { motion, useReducedMotion } from "framer-motion";
 import { Container, Reveal, buttonVariants, BrandMark, cn } from "@damc/ui";
 import { NoticesTicker } from "./notices-ticker";
 import { HeroCarousel, type HeroSlideData } from "./hero-carousel";
+import { useHeroLogo } from "@/components/hero-logo-context";
 import type { TickerItem } from "@/lib/ticker";
 
 export function Hero({
@@ -17,6 +22,23 @@ export function Hero({
   tickerItems: TickerItem[];
   slides: HeroSlideData[];
 }) {
+  const { heroLogoVisible, setHeroLogoVisible } = useHeroLogo();
+  const shouldReduceMotion = useReducedMotion();
+  const logoRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const el = logoRef.current;
+    if (!el) return;
+    // -80px top margin accounts for the sticky header's height, so the swap
+    // happens right as the hero logo would otherwise disappear behind it.
+    const observer = new IntersectionObserver(
+      ([entry]) => setHeroLogoVisible(entry.isIntersecting),
+      { rootMargin: "-80px 0px 0px 0px", threshold: 0 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [setHeroLogoVisible]);
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-parchment to-parchment-paper dark:from-ink dark:to-ink">
       {slides.length > 0 ? (
@@ -29,7 +51,16 @@ export function Hero({
       )}
       <Container className="relative py-14 text-center sm:py-20">
         <Reveal>
-          <BrandMark size={150} className="mx-auto mb-5" />
+          <div ref={logoRef} className="mx-auto mb-5 h-[150px] w-[150px]">
+            {heroLogoVisible && (
+              <motion.div
+                layoutId="brand-logo"
+                transition={shouldReduceMotion ? { duration: 0 } : { type: "spring", stiffness: 260, damping: 28 }}
+              >
+                <BrandMark size={150} />
+              </motion.div>
+            )}
+          </div>
         </Reveal>
         <Reveal delay={0.1}>
           <h1 className="text-balance font-display text-3xl font-semibold leading-tight text-ink dark:text-parchment sm:text-5xl">
