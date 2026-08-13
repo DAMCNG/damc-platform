@@ -23,7 +23,7 @@ export function LegalTeamSection({ members }: { members: LegalTeamMemberData[] }
         <div className="mx-auto mt-10 grid max-w-4xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {members.map((member, i) => (
             <Reveal key={member.id} delay={i * 0.05}>
-              <Link href={`/members/${member.slug}`}>
+              <Link href={`/members/${member.slug}?from=members`}>
                 <Card className="overflow-hidden text-center transition-transform duration-300 hover:-translate-y-1">
                   <div className="relative aspect-square w-full overflow-hidden">
                     <ImageWithSkeleton

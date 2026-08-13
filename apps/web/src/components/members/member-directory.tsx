@@ -54,7 +54,7 @@ export function MemberDirectory({ members }: { members: MemberCardData[] }) {
 
       <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {results.map((member) => (
-          <Link key={member.id} href={`/members/${member.slug}`}>
+          <Link key={member.id} href={`/members/${member.slug}?from=members`}>
             <Card className="overflow-hidden text-center transition-transform duration-300 hover:-translate-y-1">
               <div className="relative aspect-square w-full overflow-hidden">
                 <ImageWithSkeleton

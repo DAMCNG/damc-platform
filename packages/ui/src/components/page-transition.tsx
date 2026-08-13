@@ -8,6 +8,32 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const shouldReduceMotion = useReducedMotion();
 
+  // AnimatePresence keeps the outgoing page mounted (full height) during its
+  // exit animation, which swallows Next's own scroll-to-top-on-navigate -
+  // the new page just inherits whatever offset the old, often taller, page
+  // had, clamped to its own height. Restore it ourselves, but only for
+  // forward navigation (clicking a link): a back/forward navigation (via the
+  // browser's own buttons, or router.back()) fires a native `popstate` event
+  // first, and that case should keep the browser's own scroll-restoration
+  // for that history entry instead of snapping to the top.
+  const isPopNavigation = React.useRef(false);
+
+  React.useEffect(() => {
+    function handlePopState() {
+      isPopNavigation.current = true;
+    }
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  React.useEffect(() => {
+    if (isPopNavigation.current) {
+      isPopNavigation.current = false;
+      return;
+    }
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
   if (shouldReduceMotion) return <>{children}</>;
 
   return (

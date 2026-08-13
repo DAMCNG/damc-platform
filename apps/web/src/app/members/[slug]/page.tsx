@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import { ArrowLeft, Globe } from "lucide-react";
+import { Globe } from "lucide-react";
 import { prisma } from "@damc/db";
-import { Container, Reveal, Badge, Card, CardContent, buttonVariants } from "@damc/ui";
+import { Container, Reveal, Badge, Card, CardContent } from "@damc/ui";
 import { formatMonthDay } from "@/lib/dates";
 import { formatMemberName } from "@/lib/member-name";
 import { MARITAL_STATUS_LABELS } from "@/lib/labels";
 import { MemberPhoto } from "@/components/members/member-photo";
 import { FormattedText } from "@/components/formatted-text";
+import { BackLink } from "@/components/back-link";
 
 export const revalidate = 1800;
 
@@ -54,7 +54,10 @@ export default async function MemberProfilePage({
 
   if (!member || !member.isActive) notFound();
 
-  const back = from === "executives" ? { href: "/executives", label: "Back to executives" } : { href: "/members", label: "Back to members" };
+  const back =
+    from === "executives"
+      ? { href: "/executives", label: "Back to executives", canGoBack: true }
+      : { href: "/members", label: "Back to members", canGoBack: from === "members" };
 
   const details: { label: string; value: string }[] = [];
   if (member.membershipNumber) details.push({ label: "Membership no.", value: member.membershipNumber });
@@ -70,9 +73,7 @@ export default async function MemberProfilePage({
     <article className="py-16 sm:py-24">
       <Container className="max-w-3xl">
         <Reveal>
-          <Link href={back.href} className={buttonVariants({ variant: "ghost", size: "sm" })}>
-            <ArrowLeft size={16} className="mr-1.5" /> {back.label}
-          </Link>
+          <BackLink href={back.href} label={back.label} canGoBack={back.canGoBack} />
 
           <div className="mt-6 flex flex-col items-center gap-6 text-center sm:flex-row sm:items-start sm:text-left">
             <MemberPhoto photoUrl={member.photoUrl} alt={formatMemberName(member)} />
