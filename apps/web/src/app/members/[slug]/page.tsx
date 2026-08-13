@@ -29,7 +29,7 @@ export async function generateMetadata({
   const name = formatMemberName(member);
   return {
     title: name,
-    description: member.bio ?? `${name} — Dignified Articulate Men's Club member profile.`,
+    description: member.bio ?? `${name}, Dignified Articulate Men's Club member profile.`,
     openGraph: {
       title: name,
       description: member.bio ?? undefined,

@@ -27,8 +27,8 @@ interface VisionMissionContent {
 }
 
 const FALLBACK_VM: VisionMissionContent = {
-  vision: "Placeholder — the club's long-term vision statement goes here.",
-  mission: "Placeholder — the club's mission statement goes here.",
+  vision: "Placeholder: the club's long-term vision statement goes here.",
+  mission: "Placeholder: the club's mission statement goes here.",
   motto: "Uplift. Unite. Prosper.",
 };
 
@@ -53,7 +53,7 @@ export default async function AboutPage() {
               Who we are
             </h1>
             <p className="mt-5 text-lg text-bronze dark:text-parchment/70">
-              Placeholder — a warm paragraph introducing the club's history, character and
+              Placeholder: a warm paragraph introducing the club's history, character and
               community in Lagos. Replace with the club's real founding story.
             </p>
           </Reveal>

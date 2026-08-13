@@ -19,7 +19,7 @@ export function buildTickerItems({
   const entryItems: TickerItem[] = entries.map((e) => ({
     id: e.id,
     type: e.type,
-    label: `${e.title} — ${formatEventDate(e.date)}`,
+    label: `${e.title} · ${formatEventDate(e.date)}`,
     href: e.href ?? "/news",
   }));
 

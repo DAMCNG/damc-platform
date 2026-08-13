@@ -27,7 +27,7 @@ export async function POST(req: Request) {
         from: "DAMC Website <notifications@damcng.com>",
         to: process.env.ENQUIRY_NOTIFICATION_EMAIL,
         subject: `New enquiry: ${parsed.data.subject ?? "General"}`,
-        text: `From: ${parsed.data.name} <${parsed.data.email}>\nPhone: ${parsed.data.phone ?? "—"}\n\n${parsed.data.message}`,
+        text: `From: ${parsed.data.name} <${parsed.data.email}>\nPhone: ${parsed.data.phone ?? "N/A"}\n\n${parsed.data.message}`,
       });
     } catch {
       // Email notification is best-effort; the enquiry is already saved.

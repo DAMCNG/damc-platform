@@ -7,7 +7,7 @@ import { FALLBACK_CONTACT, type ContactContent } from "@/lib/site-content";
 
 export const metadata: Metadata = {
   title: "Contact & Enquiries",
-  description: "Get in touch with the Dignified Articulate Men's Club — email, phone, address and social media.",
+  description: "Get in touch with the Dignified Articulate Men's Club: email, phone, address and social media.",
 };
 
 export const revalidate = 3600;
@@ -79,16 +79,16 @@ export default async function ContactPage() {
               </div>
 
               <div className="flex gap-3 pt-2">
-                <a href={contact.whatsapp} aria-label="WhatsApp" className="flex h-11 w-11 items-center justify-center rounded-full border border-ink/12 text-ink transition-all duration-200 hover:scale-110 hover:border-gold-deep hover:text-gold-deep dark:border-parchment/15 dark:text-parchment dark:hover:text-gold-bright">
+                <a href={contact.whatsapp} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className="flex h-11 w-11 items-center justify-center rounded-full border border-ink/12 text-ink transition-all duration-200 hover:scale-110 hover:border-gold-deep hover:text-gold-deep dark:border-parchment/15 dark:text-parchment dark:hover:text-gold-bright">
                   <FaWhatsapp size={19} />
                 </a>
-                <a href={contact.instagram} aria-label="Instagram" className="flex h-11 w-11 items-center justify-center rounded-full border border-ink/12 text-ink transition-all duration-200 hover:scale-110 hover:border-gold-deep hover:text-gold-deep dark:border-parchment/15 dark:text-parchment dark:hover:text-gold-bright">
+                <a href={contact.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="flex h-11 w-11 items-center justify-center rounded-full border border-ink/12 text-ink transition-all duration-200 hover:scale-110 hover:border-gold-deep hover:text-gold-deep dark:border-parchment/15 dark:text-parchment dark:hover:text-gold-bright">
                   <FaInstagram size={19} />
                 </a>
-                <a href={contact.facebook} aria-label="Facebook" className="flex h-11 w-11 items-center justify-center rounded-full border border-ink/12 text-ink transition-all duration-200 hover:scale-110 hover:border-gold-deep hover:text-gold-deep dark:border-parchment/15 dark:text-parchment dark:hover:text-gold-bright">
+                <a href={contact.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="flex h-11 w-11 items-center justify-center rounded-full border border-ink/12 text-ink transition-all duration-200 hover:scale-110 hover:border-gold-deep hover:text-gold-deep dark:border-parchment/15 dark:text-parchment dark:hover:text-gold-bright">
                   <FaFacebook size={19} />
                 </a>
-                <a href={contact.tiktok} aria-label="TikTok" className="flex h-11 w-11 items-center justify-center rounded-full border border-ink/12 text-ink transition-all duration-200 hover:scale-110 hover:border-gold-deep hover:text-gold-deep dark:border-parchment/15 dark:text-parchment dark:hover:text-gold-bright">
+                <a href={contact.tiktok} target="_blank" rel="noopener noreferrer" aria-label="TikTok" className="flex h-11 w-11 items-center justify-center rounded-full border border-ink/12 text-ink transition-all duration-200 hover:scale-110 hover:border-gold-deep hover:text-gold-deep dark:border-parchment/15 dark:text-parchment dark:hover:text-gold-bright">
                   <FaTiktok size={19} />
                 </a>
               </div>

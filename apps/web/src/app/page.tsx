@@ -37,7 +37,7 @@ interface WhoWeAreContent {
 const FALLBACK_WHO_WE_ARE: WhoWeAreContent = {
   heading: "A brotherhood built on dignity and purpose",
   description:
-    "DAMC brings together accomplished, articulate men in Lagos for fellowship, mutual support and community impact — bound by a shared commitment to conduct, culture and each other's success.",
+    "DAMC brings together accomplished, articulate men in Lagos for fellowship, mutual support and community impact, bound by a shared commitment to conduct, culture and each other's success.",
   aims: [
     "A non-profit making private membership organization",
     "Social and recreational facilities for all its members",

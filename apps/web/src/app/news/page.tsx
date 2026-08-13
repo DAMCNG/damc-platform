@@ -62,7 +62,7 @@ export default async function NewsPage({
               News &amp; Announcements
             </h1>
             <p className="mt-5 text-lg text-bronze dark:text-parchment/70">
-              Editorials, vital notices and the club's calendar — all in one place.
+              Editorials, vital notices and the club's calendar, all in one place.
             </p>
           </Reveal>
         </Container>

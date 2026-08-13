@@ -47,7 +47,7 @@ export function EnquiryForm() {
       <div className="flex flex-col items-center gap-3 rounded-xl2 border border-ink/8 bg-white p-10 text-center shadow-card dark:border-parchment/10 dark:bg-ink-soft/40">
         <CheckCircle2 className="text-gold-deep dark:text-gold-bright" size={32} />
         <p className="font-display text-lg font-semibold text-ink dark:text-parchment">
-          Thank you — your enquiry has been received.
+          Thank you. Your enquiry has been received.
         </p>
         <p className="text-sm text-bronze dark:text-parchment/70">
           A member of our team will get back to you shortly.

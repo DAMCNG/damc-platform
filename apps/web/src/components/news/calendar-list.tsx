@@ -35,7 +35,7 @@ export function CalendarList({ entries }: { entries: CalendarEntry[] }) {
   }, [entries]);
 
   if (entries.length === 0) {
-    return <p className="text-center text-bronze dark:text-parchment/70">Nothing scheduled yet — check back soon.</p>;
+    return <p className="text-center text-bronze dark:text-parchment/70">Nothing scheduled yet. Check back soon.</p>;
   }
 
   return (

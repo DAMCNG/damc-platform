@@ -33,7 +33,7 @@ export default async function DirectoryPage() {
               Business Directory
             </h1>
             <p className="mt-5 text-lg text-bronze dark:text-parchment/70">
-              Every listing here belongs to a DAMC member — some members run more than
+              Every listing here belongs to a DAMC member, and some members run more than
               one. Search by trade and patronize your brother first.
             </p>
           </Reveal>

@@ -30,12 +30,14 @@ export async function SiteFooter() {
             <span className="font-display text-xl font-semibold text-gold-bright">DAMC</span>
           </div>
           <p className="mt-3 max-w-sm text-sm text-parchment/70">
-            Dignified Articulate Men&rsquo;s Club — a non-profit private membership
+            Dignified Articulate Men&rsquo;s Club, a non-profit private membership
             association fostering unity, wealth creation and social good in Lagos.
           </p>
           <div className="mt-6 flex gap-3">
             <a
               href={contact.whatsapp}
+              target="_blank"
+              rel="noopener noreferrer"
               aria-label="WhatsApp"
               className="rounded-full border border-parchment/20 p-2.5 transition-all duration-200 hover:scale-110 hover:border-gold-bright hover:text-gold-bright"
             >
@@ -43,6 +45,8 @@ export async function SiteFooter() {
             </a>
             <a
               href={contact.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
               aria-label="Instagram"
               className="rounded-full border border-parchment/20 p-2.5 transition-all duration-200 hover:scale-110 hover:border-gold-bright hover:text-gold-bright"
             >
@@ -50,6 +54,8 @@ export async function SiteFooter() {
             </a>
             <a
               href={contact.facebook}
+              target="_blank"
+              rel="noopener noreferrer"
               aria-label="Facebook"
               className="rounded-full border border-parchment/20 p-2.5 transition-all duration-200 hover:scale-110 hover:border-gold-bright hover:text-gold-bright"
             >
@@ -57,6 +63,8 @@ export async function SiteFooter() {
             </a>
             <a
               href={contact.tiktok}
+              target="_blank"
+              rel="noopener noreferrer"
               aria-label="TikTok"
               className="rounded-full border border-parchment/20 p-2.5 transition-all duration-200 hover:scale-110 hover:border-gold-bright hover:text-gold-bright"
             >

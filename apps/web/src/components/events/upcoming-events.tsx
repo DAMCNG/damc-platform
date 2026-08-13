@@ -24,7 +24,7 @@ export function UpcomingEvents({ entries }: { entries: CalendarEntry[] }) {
             <SectionHeading
               eyebrow="What's next"
               title="Upcoming on the club calendar"
-              description="Meetings, dues deadlines and celebrations — planned well in advance so no member is caught unaware."
+              description="Meetings, dues deadlines and celebrations, planned well in advance so no member is caught unaware."
             />
           </Reveal>
           <Reveal delay={0.1}>

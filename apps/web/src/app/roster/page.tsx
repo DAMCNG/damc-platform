@@ -33,7 +33,7 @@ export default async function RosterPage() {
               Roster of Meeting Hosts
             </h1>
             <p className="mt-5 text-lg text-bronze dark:text-parchment/70">
-              Every member takes a turn hosting — dates are published well in advance.
+              Every member takes a turn hosting, with dates published well in advance.
             </p>
           </Reveal>
         </Container>
