@@ -23,7 +23,9 @@ export default async function ExecutivesPage() {
     },
   });
 
-  const populated = categories.filter((c) => c.positions.length > 0);
+  const positions = categories.flatMap((category) =>
+    category.positions.map((position) => ({ ...position, categoryName: category.name }))
+  );
 
   return (
     <>
@@ -45,45 +47,39 @@ export default async function ExecutivesPage() {
 
       <section className="py-20 sm:py-28">
         <Container>
-          {populated.length === 0 ? (
+          {positions.length === 0 ? (
             <p className="text-center text-bronze dark:text-parchment/70">
               Executive positions will appear here once assigned in the admin dashboard.
             </p>
           ) : (
-            <div className="space-y-14">
-              {populated.map((category) => (
-                <div key={category.id}>
-                  <h2 className="text-center font-display text-2xl font-semibold text-ink dark:text-parchment sm:text-left">
-                    {category.name}
-                  </h2>
-                  <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {category.positions.map((position, i) => (
-                      <Reveal key={position.id} delay={i * 0.05}>
-                        <Link href={`/members/${position.member.slug}`}>
-                          <Card className="overflow-hidden text-center transition-transform duration-300 hover:-translate-y-1">
-                            <div className="relative h-56 w-full overflow-hidden">
-                              <ImageWithSkeleton
-                                src={optimizedImageUrl(position.member.photoUrl ?? "/placeholders/member-avatar.svg", 700)}
-                                alt={formatMemberName(position.member)}
-                                className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
-                              />
-                            </div>
-                            <div className="p-5">
-                              <div className="font-display text-lg font-semibold text-ink dark:text-parchment">
-                                {formatMemberName(position.member)}
-                              </div>
-                              {position.member.businesses[0] && (
-                                <div className="mt-1 text-sm text-bronze dark:text-parchment/60">
-                                  {position.member.businesses[0].category}
-                                </div>
-                              )}
-                            </div>
-                          </Card>
-                        </Link>
-                      </Reveal>
-                    ))}
-                  </div>
-                </div>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {positions.map((position, i) => (
+                <Reveal key={position.id} delay={Math.min(i, 8) * 0.05}>
+                  <Link href={`/members/${position.member.slug}?from=executives`}>
+                    <Card className="overflow-hidden text-center transition-transform duration-300 hover:-translate-y-1">
+                      <div className="relative aspect-square w-full overflow-hidden sm:h-56 sm:aspect-auto">
+                        <ImageWithSkeleton
+                          src={optimizedImageUrl(position.member.photoUrl ?? "/placeholders/member-avatar.svg", 700)}
+                          alt={formatMemberName(position.member)}
+                          className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                        />
+                      </div>
+                      <div className="p-5">
+                        <div className="text-xs font-bold uppercase tracking-wide text-gold-deep dark:text-gold-bright">
+                          {position.categoryName}
+                        </div>
+                        <div className="mt-1.5 font-display text-lg font-semibold text-ink dark:text-parchment">
+                          {formatMemberName(position.member)}
+                        </div>
+                        {position.member.businesses[0] && (
+                          <div className="mt-1 text-sm text-bronze dark:text-parchment/60">
+                            {position.member.businesses[0].category}
+                          </div>
+                        )}
+                      </div>
+                    </Card>
+                  </Link>
+                </Reveal>
               ))}
             </div>
           )}

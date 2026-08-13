@@ -38,14 +38,23 @@ export async function generateMetadata({
   };
 }
 
-export default async function MemberProfilePage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function MemberProfilePage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ from?: string }>;
+}) {
   const { slug } = await params;
+  const { from } = await searchParams;
   const member = await prisma.member.findUnique({
     where: { slug },
     include: { businesses: true },
   });
 
   if (!member || !member.isActive) notFound();
+
+  const back = from === "executives" ? { href: "/executives", label: "Back to executives" } : { href: "/members", label: "Back to members" };
 
   const details: { label: string; value: string }[] = [];
   if (member.membershipNumber) details.push({ label: "Membership no.", value: member.membershipNumber });
@@ -61,8 +70,8 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
     <article className="py-16 sm:py-24">
       <Container className="max-w-3xl">
         <Reveal>
-          <Link href="/members" className={buttonVariants({ variant: "ghost", size: "sm" })}>
-            <ArrowLeft size={16} className="mr-1.5" /> Back to members
+          <Link href={back.href} className={buttonVariants({ variant: "ghost", size: "sm" })}>
+            <ArrowLeft size={16} className="mr-1.5" /> {back.label}
           </Link>
 
           <div className="mt-6 flex flex-col items-center gap-6 text-center sm:flex-row sm:items-start sm:text-left">
