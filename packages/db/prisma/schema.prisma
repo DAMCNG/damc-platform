@@ -79,6 +79,10 @@ model Business {
   @@index([memberId])
 }
 
+// Legacy - superseded by ExecutiveCategory below, which admins manage
+// themselves (create/rename/delete/reorder) instead of a fixed enum.
+// Kept only so pre-migration ExecutivePosition rows keep their data; no
+// longer read or written by app code.
 enum ExecutiveRole {
   PRESIDENT
   VICE_PRESIDENT
@@ -95,19 +99,37 @@ enum ExecutiveRole {
   ETHICS_AND_PRIVILEGES_COMMISSION
 }
 
+// Admin-managed executive title (e.g. "Legal Adviser") - more than one
+// member can hold the same category at once (there can be multiple Legal
+// Advisers), and `order` controls where it sits in the public hierarchy.
+model ExecutiveCategory {
+  id        String               @id @default(cuid())
+  name      String               @unique
+  order     Int                  @default(0)
+  positions ExecutivePosition[]
+
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+
+  @@index([order])
+}
+
 model ExecutivePosition {
-  id          String        @id @default(cuid())
-  role        ExecutiveRole
-  member      Member        @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  id          String             @id @default(cuid())
+  category    ExecutiveCategory? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId  String?
+  // Legacy - see ExecutiveRole above.
+  role        ExecutiveRole?
+  member      Member             @relation(fields: [memberId], references: [id], onDelete: Cascade)
   memberId    String
   termStart   DateTime
   termEnd     DateTime?
-  isCurrent   Boolean       @default(true)
+  isCurrent   Boolean            @default(true)
 
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
 
-  @@index([role, isCurrent])
+  @@index([categoryId, isCurrent])
 }
 
 model Founder {

@@ -50,6 +50,31 @@ async function main() {
     });
   }
 
+  // ---- Executive categories (deterministic ids; update: {} so re-seeding
+  // never overwrites an admin's rename or reorder) ----
+  const executiveCategories = [
+    { id: "exec-cat-president", name: "President", order: 0 },
+    { id: "exec-cat-vice-president", name: "Vice President", order: 10 },
+    { id: "exec-cat-secretary", name: "Secretary", order: 20 },
+    { id: "exec-cat-social-secretary", name: "Social Secretary", order: 30 },
+    { id: "exec-cat-assistant-secretary", name: "Assistant Secretary", order: 40 },
+    { id: "exec-cat-treasurer", name: "Treasurer", order: 50 },
+    { id: "exec-cat-financial-secretary", name: "Financial Secretary", order: 60 },
+    { id: "exec-cat-assistant-financial-secretary", name: "Assistant Financial Secretary", order: 70 },
+    { id: "exec-cat-chief-provost", name: "Chief Provost", order: 80 },
+    { id: "exec-cat-legal-adviser", name: "Legal Adviser", order: 90 },
+    { id: "exec-cat-welfare", name: "Welfare", order: 100 },
+    { id: "exec-cat-pro", name: "PRO", order: 110 },
+    { id: "exec-cat-ethics", name: "Ethics and Privileges Commission", order: 120 },
+  ];
+  for (const c of executiveCategories) {
+    await prisma.executiveCategory.upsert({
+      where: { id: c.id },
+      update: {},
+      create: c,
+    });
+  }
+
   // ---- Site content: homepage hero, who-we-are, about vision/mission, contact ----
   await prisma.siteContent.upsert({
     where: { page_section: { page: "HOME" as SitePage, section: "hero" } },

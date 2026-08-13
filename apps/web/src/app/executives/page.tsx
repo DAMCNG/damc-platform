@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@damc/db";
-import { Container, SectionHeading, Reveal, Card, ImageWithSkeleton } from "@damc/ui";
-import { ROLE_ORDER, ROLE_LABELS } from "@/lib/labels";
+import { Container, Reveal, Card, ImageWithSkeleton } from "@damc/ui";
 import { optimizedImageUrl } from "@/lib/cloudinary";
 import { formatMemberName } from "@/lib/member-name";
 
@@ -14,15 +13,17 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default async function ExecutivesPage() {
-  const positions = await prisma.executivePosition.findMany({
-    where: { isCurrent: true },
-    include: { member: { include: { businesses: true } } },
+  const categories = await prisma.executiveCategory.findMany({
+    orderBy: { order: "asc" },
+    include: {
+      positions: {
+        where: { isCurrent: true },
+        include: { member: { include: { businesses: true } } },
+      },
+    },
   });
 
-  const byRole = new Map(positions.map((p) => [p.role, p]));
-  const ordered = ROLE_ORDER.map((role) => byRole.get(role)).filter(
-    (p): p is NonNullable<typeof p> => Boolean(p)
-  );
+  const populated = categories.filter((c) => c.positions.length > 0);
 
   return (
     <>
@@ -44,39 +45,45 @@ export default async function ExecutivesPage() {
 
       <section className="py-20 sm:py-28">
         <Container>
-          {ordered.length === 0 ? (
+          {populated.length === 0 ? (
             <p className="text-center text-bronze dark:text-parchment/70">
               Executive positions will appear here once assigned in the admin dashboard.
             </p>
           ) : (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {ordered.map((position, i) => (
-                <Reveal key={position.id} delay={i * 0.05}>
-                  <Link href={`/members/${position.member.slug}`}>
-                    <Card className="overflow-hidden text-center transition-transform duration-300 hover:-translate-y-1">
-                      <div className="relative h-56 w-full overflow-hidden">
-                        <ImageWithSkeleton
-                          src={optimizedImageUrl(position.member.photoUrl ?? "/placeholders/member-avatar.svg", 700)}
-                          alt={formatMemberName(position.member)}
-                          className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
-                        />
-                      </div>
-                      <div className="p-5">
-                        <div className="text-xs font-bold uppercase tracking-wide text-gold-deep dark:text-gold-bright">
-                          {ROLE_LABELS[position.role]}
-                        </div>
-                        <div className="mt-1.5 font-display text-lg font-semibold text-ink dark:text-parchment">
-                          {formatMemberName(position.member)}
-                        </div>
-                        {position.member.businesses[0] && (
-                          <div className="mt-1 text-sm text-bronze dark:text-parchment/60">
-                            {position.member.businesses[0].category}
-                          </div>
-                        )}
-                      </div>
-                    </Card>
-                  </Link>
-                </Reveal>
+            <div className="space-y-14">
+              {populated.map((category) => (
+                <div key={category.id}>
+                  <h2 className="text-center font-display text-2xl font-semibold text-ink dark:text-parchment sm:text-left">
+                    {category.name}
+                  </h2>
+                  <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {category.positions.map((position, i) => (
+                      <Reveal key={position.id} delay={i * 0.05}>
+                        <Link href={`/members/${position.member.slug}`}>
+                          <Card className="overflow-hidden text-center transition-transform duration-300 hover:-translate-y-1">
+                            <div className="relative h-56 w-full overflow-hidden">
+                              <ImageWithSkeleton
+                                src={optimizedImageUrl(position.member.photoUrl ?? "/placeholders/member-avatar.svg", 700)}
+                                alt={formatMemberName(position.member)}
+                                className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                              />
+                            </div>
+                            <div className="p-5">
+                              <div className="font-display text-lg font-semibold text-ink dark:text-parchment">
+                                {formatMemberName(position.member)}
+                              </div>
+                              {position.member.businesses[0] && (
+                                <div className="mt-1 text-sm text-bronze dark:text-parchment/60">
+                                  {position.member.businesses[0].category}
+                                </div>
+                              )}
+                            </div>
+                          </Card>
+                        </Link>
+                      </Reveal>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           )}

@@ -9,6 +9,7 @@
     "push": "prisma db push",
     "migrate": "prisma migrate dev",
     "seed": "prisma db seed",
+    "backfill-executive-categories": "tsx prisma/backfill-executive-categories.ts",
     "studio": "prisma studio"
   },
   "dependencies": {
