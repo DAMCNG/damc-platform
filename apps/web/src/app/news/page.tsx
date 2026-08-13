@@ -8,6 +8,8 @@ import { UpcomingEvents } from "@/components/events/upcoming-events";
 import { formatEventDate } from "@/lib/dates";
 import { optimizedImageUrl } from "@/lib/cloudinary";
 import { POST_CATEGORY_LABELS } from "@/lib/labels";
+import { postCoverImage } from "@/lib/post-cover";
+import { buildCalendarEntries } from "@/lib/calendar";
 
 export const metadata: Metadata = {
   title: "News, Blog & Announcements",
@@ -16,7 +18,7 @@ export const metadata: Metadata = {
 
 export const revalidate = 900;
 
-const CATEGORIES: PostCategory[] = ["NEWS", "ANNOUNCEMENT", "EDITORIAL", "NOTICE"];
+const CATEGORIES: PostCategory[] = ["NEWS", "ANNOUNCEMENT", "EDITORIAL", "NOTICE", "EVENTS"];
 
 export default async function NewsPage({
   searchParams,
@@ -26,17 +28,27 @@ export default async function NewsPage({
   const { category } = await searchParams;
   const activeCategory = CATEGORIES.includes(category as PostCategory) ? (category as PostCategory) : undefined;
 
-  const [events, posts] = await Promise.all([
+  const [events, members, eventPosts, posts] = await Promise.all([
     prisma.calendarEvent.findMany({
       where: { date: { gte: new Date() } },
       orderBy: { date: "asc" },
-      take: 6,
+    }),
+    prisma.member.findMany({
+      where: { isActive: true },
+      select: { id: true, firstName: true, lastName: true, birthMonth: true, birthDay: true },
+    }),
+    prisma.post.findMany({
+      where: { status: "PUBLISHED", eventDate: { gte: new Date() } },
+      select: { id: true, slug: true, title: true, excerpt: true, eventDate: true },
     }),
     prisma.post.findMany({
       where: { status: "PUBLISHED", ...(activeCategory ? { category: activeCategory } : {}) },
       orderBy: { publishedAt: "desc" },
+      include: { photos: { orderBy: { order: "asc" }, take: 1 } },
     }),
   ]);
+
+  const calendarEntries = buildCalendarEntries({ events, members, posts: eventPosts }).slice(0, 6);
 
   return (
     <>
@@ -56,7 +68,7 @@ export default async function NewsPage({
         </Container>
       </section>
 
-      <UpcomingEvents events={events} />
+      <UpcomingEvents entries={calendarEntries} />
 
       <section className="py-20 sm:py-28">
         <Container>
@@ -107,7 +119,7 @@ export default async function NewsPage({
                     <Card className="h-full overflow-hidden transition-transform duration-300 hover:-translate-y-1">
                       <div className="relative h-44 w-full overflow-hidden">
                         <ImageWithSkeleton
-                          src={optimizedImageUrl(post.coverImageUrl ?? "/placeholders/post-cover.svg", 700)}
+                          src={optimizedImageUrl(postCoverImage(post), 700)}
                           alt=""
                           className="h-full w-full object-cover"
                         />

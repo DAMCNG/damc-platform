@@ -3,12 +3,12 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { prisma } from "@damc/db";
-import { Container, Reveal, Badge, buttonVariants, ImageWithSkeleton } from "@damc/ui";
-import { optimizedImageUrl } from "@/lib/cloudinary";
+import { Container, Reveal, Badge, buttonVariants } from "@damc/ui";
 import { formatEventDate } from "@/lib/dates";
 import { POST_CATEGORY_LABELS } from "@/lib/labels";
 import { PostEngagement } from "@/components/news/post-engagement";
 import { YouTubeEmbed } from "@/components/news/youtube-embed";
+import { PostBody } from "@/components/news/post-body";
 
 export const revalidate = 900;
 
@@ -23,9 +23,13 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const post = await prisma.post.findUnique({ where: { slug } });
+  const post = await prisma.post.findUnique({
+    where: { slug },
+    include: { photos: { orderBy: { order: "asc" }, take: 1 } },
+  });
   if (!post) return {};
 
+  const cover = post.photos[0]?.url ?? post.coverImageUrl;
   return {
     title: post.title,
     description: post.excerpt ?? undefined,
@@ -34,18 +38,21 @@ export async function generateMetadata({
       description: post.excerpt ?? undefined,
       type: "article",
       publishedTime: post.publishedAt?.toISOString(),
-      images: post.coverImageUrl ? [post.coverImageUrl] : undefined,
+      images: cover ? [cover] : undefined,
     },
   };
 }
 
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const post = await prisma.post.findUnique({ where: { slug } });
+  const post = await prisma.post.findUnique({
+    where: { slug },
+    include: { photos: { orderBy: { order: "asc" } } },
+  });
 
   if (!post || post.status !== "PUBLISHED") notFound();
 
-  const paragraphs = post.content.split(/\n{2,}/);
+  const photoUrls = post.photos.length > 0 ? post.photos.map((p) => p.url) : post.coverImageUrl ? [post.coverImageUrl] : [];
 
   return (
     <article className="py-16 sm:py-24">
@@ -70,29 +77,21 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           </div>
         </Reveal>
 
-        {post.coverImageUrl && (
-          <Reveal delay={0.1}>
-            <div className="relative mt-8 aspect-video w-full overflow-hidden rounded-xl2">
-              <ImageWithSkeleton src={optimizedImageUrl(post.coverImageUrl, 1200)} alt="" className="h-full w-full object-cover" />
-            </div>
-          </Reveal>
-        )}
-
         {post.youtubeUrl && (
-          <Reveal delay={0.15}>
+          <Reveal delay={0.1}>
             <div className="mt-8">
               <YouTubeEmbed url={post.youtubeUrl} title={post.title} />
             </div>
           </Reveal>
         )}
 
-        <Reveal delay={0.2}>
+        <Reveal delay={0.15}>
           <div className="mt-8">
-            {paragraphs.map((para, i) => (
-              <p key={i} className="mb-5 leading-relaxed text-ink dark:text-parchment/90">
-                {para}
-              </p>
-            ))}
+            <PostBody
+              content={post.content}
+              photoUrls={photoUrls}
+              paragraphClassName="mb-5 leading-relaxed text-ink dark:text-parchment/90 last:mb-0"
+            />
           </div>
         </Reveal>
       </Container>

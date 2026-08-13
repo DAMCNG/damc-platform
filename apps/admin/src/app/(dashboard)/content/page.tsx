@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { Pencil } from "lucide-react";
 import { prisma } from "@damc/db";
 import { PageHeader } from "@/components/page-header";
 import { FormField, inputClass } from "@/components/form-field";
@@ -164,7 +166,14 @@ export default async function ContentPage() {
                 <Td className="font-medium">{founder.name}</Td>
                 <Td className="text-bronze dark:text-parchment/60">{founder.title ?? "—"}</Td>
                 <Td>
-                  <div className="flex justify-end">
+                  <div className="flex items-center justify-end gap-1">
+                    <Link
+                      href={`/content/founders/${founder.id}`}
+                      aria-label="Edit"
+                      className="rounded-lg p-1.5 text-bronze transition-colors hover:bg-gold/10 hover:text-gold-deep dark:text-parchment/60 dark:hover:text-gold-bright"
+                    >
+                      <Pencil size={16} />
+                    </Link>
                     <form action={deleteFounder}>
                       <input type="hidden" name="id" value={founder.id} />
                       <DeleteButton confirmMessage={`Remove ${founder.name}?`} />

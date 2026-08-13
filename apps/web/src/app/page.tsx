@@ -9,6 +9,7 @@ import { LatestNews } from "@/components/home/latest-news";
 import { JoinCta } from "@/components/home/join-cta";
 import { withinNextDays } from "@/lib/dates";
 import { buildTickerItems } from "@/lib/ticker";
+import { buildCalendarEntries } from "@/lib/calendar";
 import { Container, SectionHeading, Reveal, buttonVariants } from "@damc/ui";
 import type { GalleryItemData } from "@/components/gallery/gallery-grid";
 
@@ -47,37 +48,42 @@ const FALLBACK_WHO_WE_ARE: WhoWeAreContent = {
 };
 
 export default async function HomePage() {
-  const [heroContent, whoWeAreContent, heroSlides, events, members, posts, notices, galleryItems] = await Promise.all([
-    prisma.siteContent.findUnique({ where: { page_section: { page: "HOME", section: "hero" } } }),
-    prisma.siteContent.findUnique({ where: { page_section: { page: "HOME", section: "who-we-are" } } }),
-    prisma.heroSlide.findMany({ orderBy: { order: "asc" } }),
-    prisma.calendarEvent.findMany({
-      where: { date: { gte: new Date() } },
-      orderBy: { date: "asc" },
-      take: 6,
-    }),
-    prisma.member.findMany({ where: { isActive: true } }),
-    prisma.post.findMany({
-      where: { status: "PUBLISHED" },
-      orderBy: { publishedAt: "desc" },
-      take: 8,
-    }),
-    prisma.post.findMany({
-      where: { status: "PUBLISHED", category: "NOTICE" },
-      orderBy: { publishedAt: "desc" },
-      take: 4,
-    }),
-    prisma.galleryItem.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 12,
-      include: { photos: { orderBy: { order: "asc" } } },
-    }),
-  ]);
+  const [heroContent, whoWeAreContent, heroSlides, events, members, posts, notices, eventPosts, galleryItems] =
+    await Promise.all([
+      prisma.siteContent.findUnique({ where: { page_section: { page: "HOME", section: "hero" } } }),
+      prisma.siteContent.findUnique({ where: { page_section: { page: "HOME", section: "who-we-are" } } }),
+      prisma.heroSlide.findMany({ orderBy: { order: "asc" } }),
+      prisma.calendarEvent.findMany({
+        where: { date: { gte: new Date() } },
+        orderBy: { date: "asc" },
+      }),
+      prisma.member.findMany({ where: { isActive: true } }),
+      prisma.post.findMany({
+        where: { status: "PUBLISHED" },
+        orderBy: { publishedAt: "desc" },
+        take: 8,
+      }),
+      prisma.post.findMany({
+        where: { status: "PUBLISHED", category: "NOTICE" },
+        orderBy: { publishedAt: "desc" },
+        take: 4,
+      }),
+      prisma.post.findMany({
+        where: { status: "PUBLISHED", eventDate: { gte: new Date() } },
+        select: { id: true, slug: true, title: true, excerpt: true, eventDate: true },
+      }),
+      prisma.galleryItem.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 12,
+        include: { photos: { orderBy: { order: "asc" } } },
+      }),
+    ]);
 
   const hero = (heroContent?.content as unknown as HeroContent) ?? FALLBACK_HERO;
   const whoWeAre = (whoWeAreContent?.content as unknown as WhoWeAreContent) ?? FALLBACK_WHO_WE_ARE;
   const birthdays = withinNextDays(members, 30).slice(0, 10);
-  const tickerItems = buildTickerItems({ events, notices, birthdays });
+  const calendarEntries = buildCalendarEntries({ events, members, posts: eventPosts });
+  const tickerItems = buildTickerItems({ entries: calendarEntries.slice(0, 6), notices });
 
   return (
     <>
@@ -110,7 +116,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      <UpcomingEvents events={events} />
+      <UpcomingEvents entries={calendarEntries.slice(0, 6)} />
       <UpcomingBirthdays birthdays={birthdays} />
       <LatestNews posts={posts} />
       <JoinCta />

@@ -1,13 +1,15 @@
 import Link from "next/link";
 import { FormField, inputClass } from "@/components/form-field";
 import { SubmitButton } from "@/components/submit-button";
-import { ImageUrlField } from "@/components/image-url-field";
+import { ImageUrlTextareaField } from "@/components/image-url-field";
 import type { Post } from "@damc/db";
 
-const CATEGORIES = ["NEWS", "ANNOUNCEMENT", "EDITORIAL", "NOTICE"] as const;
+const CATEGORIES = ["NEWS", "ANNOUNCEMENT", "EDITORIAL", "NOTICE", "EVENTS"] as const;
 const STATUSES = ["DRAFT", "PUBLISHED"] as const;
 
 export function PostForm({ post, action }: { post?: Post; action: (formData: FormData) => void }) {
+  const eventDateValue = post?.eventDate ? post.eventDate.toISOString().slice(0, 10) : undefined;
+
   return (
     <form action={action} className="space-y-6">
       {post && <input type="hidden" name="id" value={post.id} />}
@@ -34,7 +36,9 @@ export function PostForm({ post, action }: { post?: Post; action: (formData: For
               ))}
             </select>
           </FormField>
-          <ImageUrlField id="coverImageUrl" name="coverImageUrl" label="Cover image URL" defaultValue={post?.coverImageUrl} />
+          <FormField label="Event date (optional)" htmlFor="eventDate" hint="A wedding, burial, etc. Set this and the post also shows up on the club calendar.">
+            <input id="eventDate" name="eventDate" type="date" defaultValue={eventDateValue} className={inputClass} />
+          </FormField>
           <FormField label="YouTube URL (optional)" htmlFor="youtubeUrl">
             <input id="youtubeUrl" name="youtubeUrl" defaultValue={post?.youtubeUrl ?? ""} className={inputClass} placeholder="https://youtube.com/watch?v=..." />
           </FormField>
@@ -45,10 +49,24 @@ export function PostForm({ post, action }: { post?: Post; action: (formData: For
           </FormField>
         </div>
         <div className="mt-4">
-          <FormField label="Content" htmlFor="content" hint="Plain paragraphs, separated by a blank line.">
+          <FormField
+            label="Content"
+            htmlFor="content"
+            hint="Leave a blank line between paragraphs. Use **bold** and *italic* for emphasis. To place the 2nd, 3rd, etc. photo at a specific spot, type [photo] on its own line there — any photos you don't place that way appear at the end."
+          >
             <textarea id="content" name="content" required rows={10} defaultValue={post?.content} className={inputClass} />
           </FormField>
         </div>
+        {!post && (
+          <div className="mt-4">
+            <ImageUrlTextareaField
+              id="photoUrls"
+              name="photoUrls"
+              label="Photos"
+              hint="One per line. Add as many as you like — the first becomes the cover image. Manage them individually after creating the post."
+            />
+          </div>
+        )}
       </div>
 
       <div className="flex items-center gap-3">

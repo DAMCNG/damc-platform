@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { FaWhatsapp, FaInstagram, FaFacebook, FaTiktok } from "react-icons/fa6";
+import { prisma } from "@damc/db";
 import { Container, BrandMark, ThemeToggle } from "@damc/ui";
+import { FALLBACK_CONTACT, type ContactContent } from "@/lib/site-content";
 
 const SITEMAP = [
   { href: "/about", label: "About us" },
@@ -13,7 +15,12 @@ const SITEMAP = [
   { href: "/gallery", label: "Gallery" },
 ];
 
-export function SiteFooter() {
+export async function SiteFooter() {
+  const contactContent = await prisma.siteContent.findUnique({
+    where: { page_section: { page: "CONTACT", section: "details" } },
+  });
+  const contact = (contactContent?.content as unknown as ContactContent) ?? FALLBACK_CONTACT;
+
   return (
     <footer className="border-t border-ink/10 bg-ink text-parchment dark:border-parchment/10">
       <Container className="grid gap-10 py-16 sm:grid-cols-2 lg:grid-cols-4">
@@ -28,28 +35,28 @@ export function SiteFooter() {
           </p>
           <div className="mt-6 flex gap-3">
             <a
-              href="#"
+              href={contact.whatsapp}
               aria-label="WhatsApp"
               className="rounded-full border border-parchment/20 p-2.5 transition-all duration-200 hover:scale-110 hover:border-gold-bright hover:text-gold-bright"
             >
               <FaWhatsapp size={18} />
             </a>
             <a
-              href="#"
+              href={contact.instagram}
               aria-label="Instagram"
               className="rounded-full border border-parchment/20 p-2.5 transition-all duration-200 hover:scale-110 hover:border-gold-bright hover:text-gold-bright"
             >
               <FaInstagram size={18} />
             </a>
             <a
-              href="#"
+              href={contact.facebook}
               aria-label="Facebook"
               className="rounded-full border border-parchment/20 p-2.5 transition-all duration-200 hover:scale-110 hover:border-gold-bright hover:text-gold-bright"
             >
               <FaFacebook size={18} />
             </a>
             <a
-              href="#"
+              href={contact.tiktok}
               aria-label="TikTok"
               className="rounded-full border border-parchment/20 p-2.5 transition-all duration-200 hover:scale-110 hover:border-gold-bright hover:text-gold-bright"
             >

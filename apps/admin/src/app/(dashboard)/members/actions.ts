@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { prisma } from "@damc/db";
+import { prisma, MaritalStatus } from "@damc/db";
 import { requireContentPermission } from "@/lib/guards";
 import { revalidateWebPaths } from "@/lib/revalidate-web";
 import { toastUrl } from "@/lib/toast-redirect";
@@ -20,11 +20,15 @@ function readMemberFields(formData: FormData) {
   const lastName = String(formData.get("lastName") ?? "").trim();
   const birthMonth = formData.get("birthMonth");
   const birthDay = formData.get("birthDay");
+  const yearJoined = formData.get("yearJoined");
+  const maritalStatus = String(formData.get("maritalStatus") ?? "");
 
   return {
     firstName,
     lastName,
     slug: slugify(firstName, lastName),
+    title: String(formData.get("title") ?? "") || null,
+    nickname: String(formData.get("nickname") ?? "") || null,
     photoUrl: String(formData.get("photoUrl") ?? "") || null,
     bio: String(formData.get("bio") ?? "") || null,
     phone: String(formData.get("phone") ?? "") || null,
@@ -32,6 +36,13 @@ function readMemberFields(formData: FormData) {
     whatsapp: String(formData.get("whatsapp") ?? "") || null,
     birthMonth: birthMonth ? Number(birthMonth) : null,
     birthDay: birthDay ? Number(birthDay) : null,
+    membershipNumber: String(formData.get("membershipNumber") ?? "") || null,
+    occupation: String(formData.get("occupation") ?? "") || null,
+    stateOfOrigin: String(formData.get("stateOfOrigin") ?? "") || null,
+    yearJoined: yearJoined ? Number(yearJoined) : null,
+    maritalStatus: maritalStatus ? (maritalStatus as MaritalStatus) : null,
+    isLegalTeam: formData.get("isLegalTeam") === "on",
+    legalTeamTitle: String(formData.get("legalTeamTitle") ?? "") || null,
     isActive: formData.get("isActive") === "on",
   };
 }

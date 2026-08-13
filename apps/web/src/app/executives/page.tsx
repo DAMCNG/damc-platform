@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { prisma } from "@damc/db";
 import { Container, SectionHeading, Reveal, Card, ImageWithSkeleton } from "@damc/ui";
 import { ROLE_ORDER, ROLE_LABELS } from "@/lib/labels";
 import { optimizedImageUrl } from "@/lib/cloudinary";
+import { formatMemberName } from "@/lib/member-name";
 
 export const metadata: Metadata = {
   title: "Executives & Board of Trustees",
@@ -50,28 +52,30 @@ export default async function ExecutivesPage() {
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {ordered.map((position, i) => (
                 <Reveal key={position.id} delay={i * 0.05}>
-                  <Card className="overflow-hidden text-center transition-transform duration-300 hover:-translate-y-1">
-                    <div className="relative h-56 w-full overflow-hidden">
-                      <ImageWithSkeleton
-                        src={optimizedImageUrl(position.member.photoUrl ?? "/placeholders/member-avatar.svg", 700)}
-                        alt={`${position.member.firstName} ${position.member.lastName}`}
-                        className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
-                      />
-                    </div>
-                    <div className="p-5">
-                      <div className="text-xs font-bold uppercase tracking-wide text-gold-deep dark:text-gold-bright">
-                        {ROLE_LABELS[position.role]}
+                  <Link href={`/members/${position.member.slug}`}>
+                    <Card className="overflow-hidden text-center transition-transform duration-300 hover:-translate-y-1">
+                      <div className="relative h-56 w-full overflow-hidden">
+                        <ImageWithSkeleton
+                          src={optimizedImageUrl(position.member.photoUrl ?? "/placeholders/member-avatar.svg", 700)}
+                          alt={formatMemberName(position.member)}
+                          className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                        />
                       </div>
-                      <div className="mt-1.5 font-display text-lg font-semibold text-ink dark:text-parchment">
-                        {position.member.firstName} {position.member.lastName}
-                      </div>
-                      {position.member.businesses[0] && (
-                        <div className="mt-1 text-sm text-bronze dark:text-parchment/60">
-                          {position.member.businesses[0].category}
+                      <div className="p-5">
+                        <div className="text-xs font-bold uppercase tracking-wide text-gold-deep dark:text-gold-bright">
+                          {ROLE_LABELS[position.role]}
                         </div>
-                      )}
-                    </div>
-                  </Card>
+                        <div className="mt-1.5 font-display text-lg font-semibold text-ink dark:text-parchment">
+                          {formatMemberName(position.member)}
+                        </div>
+                        {position.member.businesses[0] && (
+                          <div className="mt-1 text-sm text-bronze dark:text-parchment/60">
+                            {position.member.businesses[0].category}
+                          </div>
+                        )}
+                      </div>
+                    </Card>
+                  </Link>
                 </Reveal>
               ))}
             </div>

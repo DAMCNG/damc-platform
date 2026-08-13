@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { prisma } from "@damc/db";
 import { Container, Reveal } from "@damc/ui";
 import { MemberDirectory, type MemberCardData } from "@/components/members/member-directory";
+import { LegalTeamSection, type LegalTeamMemberData } from "@/components/members/legal-team-section";
 
 export const metadata: Metadata = {
   title: "Members",
@@ -11,20 +12,38 @@ export const metadata: Metadata = {
 export const revalidate = 1800;
 
 export default async function MembersPage() {
-  const members = await prisma.member.findMany({
-    where: { isActive: true },
-    orderBy: { firstName: "asc" },
-    select: {
-      id: true,
-      slug: true,
-      firstName: true,
-      lastName: true,
-      photoUrl: true,
-      birthMonth: true,
-      birthDay: true,
-      businesses: { select: { name: true, category: true } },
-    },
-  });
+  const [legalTeam, members] = await Promise.all([
+    prisma.member.findMany({
+      where: { isActive: true, isLegalTeam: true },
+      orderBy: { firstName: "asc" },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        firstName: true,
+        lastName: true,
+        photoUrl: true,
+        legalTeamTitle: true,
+      },
+    }),
+    prisma.member.findMany({
+      where: { isActive: true, isLegalTeam: false },
+      orderBy: { firstName: "asc" },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        firstName: true,
+        lastName: true,
+        photoUrl: true,
+        birthMonth: true,
+        birthDay: true,
+        businesses: { select: { name: true, category: true } },
+      },
+    }),
+  ]);
+
+  const total = legalTeam.length + members.length;
 
   return (
     <>
@@ -38,11 +57,13 @@ export default async function MembersPage() {
               Members
             </h1>
             <p className="mt-5 text-lg text-bronze dark:text-parchment/70">
-              {members.length} dignified, articulate men — search by name, trade or industry.
+              {total} dignified, articulate men — search by name, trade or industry.
             </p>
           </Reveal>
         </Container>
       </section>
+
+      <LegalTeamSection members={legalTeam as LegalTeamMemberData[]} />
 
       <section className="py-20 sm:py-28">
         <Container>

@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export const revalidate = 900;
 
 export default async function NewsCalendarPage() {
-  const [events, members] = await Promise.all([
+  const [events, members, posts] = await Promise.all([
     prisma.calendarEvent.findMany({
       where: { date: { gte: new Date() } },
       orderBy: { date: "asc" },
@@ -23,9 +23,13 @@ export default async function NewsCalendarPage() {
       where: { isActive: true },
       select: { id: true, firstName: true, lastName: true, birthMonth: true, birthDay: true },
     }),
+    prisma.post.findMany({
+      where: { status: "PUBLISHED", eventDate: { gte: new Date() } },
+      select: { id: true, slug: true, title: true, excerpt: true, eventDate: true },
+    }),
   ]);
 
-  const entries = buildCalendarEntries({ events, members, daysAhead: 180 });
+  const entries = buildCalendarEntries({ events, members, posts, daysAhead: 180 });
 
   return (
     <>

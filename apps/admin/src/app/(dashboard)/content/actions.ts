@@ -125,7 +125,7 @@ export async function updateContactContent(formData: FormData) {
   });
 
   revalidatePath("/content");
-  await revalidateWebPaths(["/contact"]);
+  await revalidateWebPaths(["/contact", "/"]);
   redirect(toastUrl("/content", "Contact details saved."));
 }
 
@@ -147,6 +147,26 @@ export async function createFounder(formData: FormData) {
   revalidatePath("/content");
   await revalidateWebPaths(["/about"]);
   redirect(toastUrl("/content", `${name} was added.`));
+}
+
+export async function updateFounder(formData: FormData) {
+  await requireContentPermission();
+  const id = String(formData.get("id"));
+  const name = String(formData.get("name") ?? "").trim();
+  if (!id || !name) return;
+
+  await prisma.founder.update({
+    where: { id },
+    data: {
+      name,
+      title: String(formData.get("title") ?? "") || null,
+      photoUrl: String(formData.get("photoUrl") ?? "") || null,
+    },
+  });
+
+  revalidatePath("/content");
+  await revalidateWebPaths(["/about"]);
+  redirect(toastUrl("/content", `${name} was updated.`));
 }
 
 export async function deleteFounder(formData: FormData) {

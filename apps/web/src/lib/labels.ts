@@ -1,10 +1,18 @@
-import type { ExecutiveRole, PostCategory } from "@damc/db";
+import type { ExecutiveRole, MaritalStatus, PostCategory } from "@damc/db";
 
 export const POST_CATEGORY_LABELS: Record<PostCategory, string> = {
   NEWS: "News",
   ANNOUNCEMENT: "Announcement",
   EDITORIAL: "Editorial",
   NOTICE: "Notice",
+  EVENTS: "Events",
+};
+
+export const MARITAL_STATUS_LABELS: Record<MaritalStatus, string> = {
+  SINGLE: "Single",
+  MARRIED: "Married",
+  DIVORCED: "Divorced",
+  WIDOWED: "Widowed",
 };
 
 export const ROLE_ORDER: ExecutiveRole[] = [

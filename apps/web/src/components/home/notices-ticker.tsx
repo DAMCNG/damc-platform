@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Calendar, Wallet, PartyPopper, Cake, Megaphone, Star, type LucideIcon } from "lucide-react";
+import { Calendar, Wallet, PartyPopper, Cake, Megaphone, Sparkles, Star, type LucideIcon } from "lucide-react";
 import { AutoScrollRow } from "@damc/ui";
 import type { TickerItem } from "@/lib/ticker";
 
@@ -10,6 +10,7 @@ const ICONS: Record<TickerItem["type"], LucideIcon> = {
   DUES: Wallet,
   HOLIDAY: PartyPopper,
   BIRTHDAY: Cake,
+  EVENT: Sparkles,
   NOTICE: Megaphone,
   OTHER: Star,
 };

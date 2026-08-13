@@ -1,27 +1,26 @@
-import type { CalendarEvent, Post } from "@damc/db";
+import type { Post } from "@damc/db";
 import { formatEventDate } from "./dates";
+import type { CalendarEntry } from "./calendar";
 
 export interface TickerItem {
   id: string;
-  type: "MEETING" | "DUES" | "HOLIDAY" | "OTHER" | "BIRTHDAY" | "NOTICE";
+  type: "MEETING" | "DUES" | "HOLIDAY" | "OTHER" | "BIRTHDAY" | "EVENT" | "NOTICE";
   label: string;
   href: string;
 }
 
 export function buildTickerItems({
-  events,
+  entries,
   notices,
-  birthdays,
 }: {
-  events: CalendarEvent[];
+  entries: CalendarEntry[];
   notices: Post[];
-  birthdays: { member: { id: string; firstName: string; lastName: string } }[];
 }): TickerItem[] {
-  const eventItems: TickerItem[] = events.map((e) => ({
-    id: `event-${e.id}`,
+  const entryItems: TickerItem[] = entries.map((e) => ({
+    id: e.id,
     type: e.type,
     label: `${e.title} — ${formatEventDate(e.date)}`,
-    href: "/news",
+    href: e.href ?? "/news",
   }));
 
   const noticeItems: TickerItem[] = notices.map((p) => ({
@@ -31,12 +30,5 @@ export function buildTickerItems({
     href: `/news/${p.slug}`,
   }));
 
-  const birthdayItems: TickerItem[] = birthdays.map(({ member }) => ({
-    id: `birthday-${member.id}`,
-    type: "BIRTHDAY",
-    label: `${member.firstName} ${member.lastName}'s birthday`,
-    href: "/members",
-  }));
-
-  return [...eventItems, ...noticeItems, ...birthdayItems];
+  return [...entryItems, ...noticeItems];
 }

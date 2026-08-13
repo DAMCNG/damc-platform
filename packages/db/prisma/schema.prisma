@@ -11,11 +11,20 @@ datasource db {
 
 // ---------- Members & Executives ----------
 
+enum MaritalStatus {
+  SINGLE
+  MARRIED
+  DIVORCED
+  WIDOWED
+}
+
 model Member {
   id                  String    @id @default(cuid())
   slug                String    @unique
+  title               String?   // Eng., Dr., Chief, Amb., Mr., etc.
   firstName           String
   lastName             String
+  nickname            String?
   photoUrl            String?
   bio                 String?
   phone               String?
@@ -25,6 +34,18 @@ model Member {
   // Birthday - month/day only, no year required
   birthMonth          Int?      // 1-12
   birthDay            Int?      // 1-31
+
+  membershipNumber    String?
+  occupation          String?
+  stateOfOrigin       String?
+  yearJoined          Int?
+  maritalStatus       MaritalStatus?
+
+  // Legal team: a distinct member tier shown above ordinary members on the
+  // public site, not a separate model — see legalTeamTitle for an optional
+  // label (e.g. "Legal Adviser", "Committee Chair").
+  isLegalTeam         Boolean   @default(false)
+  legalTeamTitle      String?
 
   joinedDate          DateTime?
   isActive            Boolean   @default(true)
@@ -114,6 +135,7 @@ enum PostCategory {
   ANNOUNCEMENT
   EDITORIAL
   NOTICE
+  EVENTS
 }
 
 enum PostStatus {
@@ -128,11 +150,18 @@ model Post {
   excerpt       String?
   content       String
   coverImageUrl String?
+  // Additional images beyond the cover — a post can carry more than one photo,
+  // same pattern as GalleryItem/GalleryPhoto below.
+  photos        PostPhoto[]
   youtubeUrl    String?
   category      PostCategory
   status        PostStatus   @default(DRAFT)
   authorName    String
   publishedAt   DateTime?
+  // Optional: the real-world date this post is about (e.g. a wedding or
+  // burial), distinct from publishedAt. When set, the post also appears on
+  // the club calendar — same idea as a CalendarEvent, but authored as news.
+  eventDate     DateTime?
   views         Int          @default(0)
   likes         Int          @default(0)
 
@@ -141,6 +170,18 @@ model Post {
 
   @@index([category, status])
   @@index([publishedAt])
+  @@index([eventDate])
+}
+
+model PostPhoto {
+  id        String   @id @default(cuid())
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    String
+  url       String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([postId])
 }
 
 // ---------- Calendar ----------

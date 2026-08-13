@@ -116,19 +116,19 @@ export default async function AboutPage() {
             <Reveal>
               <SectionHeading eyebrow="Founders" title="The men who started it all" align="center" />
             </Reveal>
-            <div className="mx-auto mt-10 grid max-w-3xl gap-8 sm:grid-cols-3">
+            <div className="mx-auto mt-10 grid max-w-4xl gap-10 sm:grid-cols-3">
               {founders.map((f, i) => (
                 <Reveal key={f.id} delay={i * 0.08}>
                   <div className="text-center">
-                    <div className="relative mx-auto h-28 w-28 overflow-hidden rounded-full ring-4 ring-gold/20">
+                    <div className="relative mx-auto h-44 w-44 overflow-hidden rounded-full ring-4 ring-gold/20">
                       <ImageWithSkeleton
-                        src={optimizedImageUrl(f.photoUrl ?? "/placeholders/member-avatar.svg", 250)}
+                        src={optimizedImageUrl(f.photoUrl ?? "/placeholders/member-avatar.svg", 400)}
                         alt={f.name}
                         className="h-full w-full object-cover"
                       />
                     </div>
-                    <div className="mt-3 font-display font-semibold text-ink dark:text-parchment">{f.name}</div>
-                    {f.title && <div className="text-xs text-gold-deep dark:text-gold-bright">{f.title}</div>}
+                    <div className="mt-4 font-display text-lg font-semibold text-ink dark:text-parchment">{f.name}</div>
+                    {f.title && <div className="text-sm text-gold-deep dark:text-gold-bright">{f.title}</div>}
                   </div>
                 </Reveal>
               ))}

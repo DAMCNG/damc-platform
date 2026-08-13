@@ -1,9 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { Calendar, PartyPopper, Wallet, Cake, Star, X, type LucideIcon } from "lucide-react";
+import Link from "next/link";
+import { Calendar, PartyPopper, Wallet, Cake, Star, Sparkles, X, type LucideIcon } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { formatEventDate } from "@/lib/dates";
+import { buttonVariants, cn } from "@damc/ui";
 import type { CalendarEntry } from "@/lib/calendar";
 
 const ICONS: Record<CalendarEntry["type"], LucideIcon> = {
@@ -12,6 +14,7 @@ const ICONS: Record<CalendarEntry["type"], LucideIcon> = {
   DUES: Wallet,
   BIRTHDAY: Cake,
   OTHER: Star,
+  EVENT: Sparkles,
 };
 
 function monthKey(date: Date) {
@@ -96,6 +99,11 @@ export function CalendarList({ entries }: { entries: CalendarEntry[] }) {
               <h3 className="mt-2 font-display text-xl font-semibold text-ink dark:text-parchment">{active.title}</h3>
               {active.description && (
                 <p className="mt-3 text-sm leading-relaxed text-bronze dark:text-parchment/70">{active.description}</p>
+              )}
+              {active.href && (
+                <Link href={active.href} className={cn(buttonVariants({ variant: "outline", size: "sm" }), "mt-4")}>
+                  Read more
+                </Link>
               )}
             </motion.div>
           </motion.div>

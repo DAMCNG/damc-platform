@@ -37,4 +37,5 @@ export const POST_CATEGORY_LABELS: Record<PostCategory, string> = {
   ANNOUNCEMENT: "Announcement",
   EDITORIAL: "Editorial",
   NOTICE: "Notice",
+  EVENTS: "Events",
 };

@@ -3,6 +3,7 @@ import { FaEnvelope, FaPhone, FaLocationDot, FaWhatsapp, FaInstagram, FaFacebook
 import { prisma } from "@damc/db";
 import { Container, Reveal, SectionHeading } from "@damc/ui";
 import { EnquiryForm } from "@/components/contact/enquiry-form";
+import { FALLBACK_CONTACT, type ContactContent } from "@/lib/site-content";
 
 export const metadata: Metadata = {
   title: "Contact & Enquiries",
@@ -10,26 +11,6 @@ export const metadata: Metadata = {
 };
 
 export const revalidate = 3600;
-
-interface ContactContent {
-  email: string;
-  phone: string;
-  address: string;
-  whatsapp: string;
-  instagram: string;
-  facebook: string;
-  tiktok: string;
-}
-
-const FALLBACK_CONTACT: ContactContent = {
-  email: "info@damcng.com",
-  phone: "+234 800 000 0000",
-  address: "Placeholder address, Lagos, Nigeria",
-  whatsapp: "https://wa.me/2348000000000",
-  instagram: "https://instagram.com/damcofficial",
-  facebook: "https://facebook.com/damcofficial",
-  tiktok: "https://tiktok.com/@damcofficial",
-};
 
 export default async function ContactPage() {
   const contactContent = await prisma.siteContent.findUnique({
