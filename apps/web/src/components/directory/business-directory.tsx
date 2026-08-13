@@ -92,15 +92,15 @@ export function BusinessDirectory({ businesses }: { businesses: BusinessCardData
         {results.map((biz) => (
           <Card key={biz.id} className="transition-transform duration-300 hover:-translate-y-1">
             <CardContent>
-              <div className="flex items-center gap-2.5">
-                <span className="relative block h-8 w-8 flex-shrink-0 overflow-hidden rounded-full">
+              <div className="flex items-center gap-3">
+                <span className="relative block h-14 w-14 flex-shrink-0 overflow-hidden rounded-full">
                   <ImageWithSkeleton
-                    src={optimizedImageUrl(biz.member.photoUrl ?? "/placeholders/member-avatar.svg", 80)}
+                    src={optimizedImageUrl(biz.member.photoUrl ?? "/placeholders/member-avatar.svg", 150)}
                     alt=""
                     className="h-full w-full object-cover"
                   />
                 </span>
-                <p className="text-xs text-bronze-soft dark:text-parchment/50">
+                <p className="text-sm text-bronze-soft dark:text-parchment/50">
                   {biz.member.firstName} {biz.member.lastName}
                 </p>
               </div>

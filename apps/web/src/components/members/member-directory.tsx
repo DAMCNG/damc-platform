@@ -52,13 +52,13 @@ export function MemberDirectory({ members }: { members: MemberCardData[] }) {
         {results.length} member{results.length === 1 ? "" : "s"}
       </p>
 
-      <div className="mx-auto mt-8 grid max-w-4xl gap-8 sm:grid-cols-2">
+      <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {results.map((member) => (
           <Link key={member.id} href={`/members/${member.slug}`}>
             <Card className="overflow-hidden text-center transition-transform duration-300 hover:-translate-y-1">
               <div className="relative aspect-square w-full overflow-hidden">
                 <ImageWithSkeleton
-                  src={optimizedImageUrl(member.photoUrl ?? "/placeholders/member-avatar.svg", 900)}
+                  src={optimizedImageUrl(member.photoUrl ?? "/placeholders/member-avatar.svg", 700)}
                   alt={formatMemberName(member)}
                   className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
                 />
