@@ -52,32 +52,32 @@ export function MemberDirectory({ members }: { members: MemberCardData[] }) {
         {results.length} member{results.length === 1 ? "" : "s"}
       </p>
 
-      <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {results.map((member) => (
           <Link key={member.id} href={`/members/${member.slug}`}>
             <Card className="overflow-hidden text-center transition-transform duration-300 hover:-translate-y-1">
               <div className="relative aspect-square w-full overflow-hidden">
                 <ImageWithSkeleton
-                  src={optimizedImageUrl(member.photoUrl ?? "/placeholders/member-avatar.svg", 700)}
+                  src={optimizedImageUrl(member.photoUrl ?? "/placeholders/member-avatar.svg", 500)}
                   alt={formatMemberName(member)}
                   className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
                 />
               </div>
-              <div className="p-4">
-                <div className="font-display font-semibold text-ink dark:text-parchment">
+              <div className="p-3">
+                <div className="font-display text-sm font-semibold text-ink dark:text-parchment">
                   {formatMemberName(member)}
                 </div>
                 {member.businesses.length > 0 && (
-                  <div className="mt-2 flex flex-wrap justify-center gap-1">
+                  <div className="mt-1.5 flex flex-wrap justify-center gap-1">
                     {member.businesses.map((biz) => (
-                      <Badge key={biz.category + biz.name} variant="gold">
+                      <Badge key={biz.category + biz.name} variant="gold" className="text-[10px]">
                         {biz.category}
                       </Badge>
                     ))}
                   </div>
                 )}
                 {member.birthMonth && member.birthDay && (
-                  <div className="mt-2 text-xs text-bronze-soft dark:text-parchment/50">
+                  <div className="mt-1.5 text-xs text-bronze-soft dark:text-parchment/50">
                     {formatMonthDay(member.birthMonth, member.birthDay)}
                   </div>
                 )}
