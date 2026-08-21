@@ -10,6 +10,7 @@ import {
   Crown,
   Newspaper,
   CalendarClock,
+  CalendarDays,
   Trophy,
   Images,
   ShieldCheck,
@@ -40,6 +41,7 @@ export function SidebarNav({ user }: { user: AdminSession }) {
         { href: "/members", label: "Members", icon: Users },
         { href: "/news", label: "News & blog", icon: Newspaper },
         { href: "/roster", label: "Roster", icon: CalendarClock },
+        { href: "/calendar", label: "Calendar", icon: CalendarDays },
         { href: "/achievements", label: "Achievements", icon: Trophy },
         { href: "/gallery", label: "Gallery", icon: Images },
       ]

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@damc/db";
 import { Container, Reveal, Card, ImageWithSkeleton } from "@damc/ui";
-import { optimizedImageUrl } from "@/lib/cloudinary";
+import { squareAvatarUrl } from "@/lib/cloudinary";
 import { formatMemberName } from "@/lib/member-name";
 
 export const metadata: Metadata = {
@@ -57,9 +57,9 @@ export default async function ExecutivesPage() {
                 <Reveal key={position.id} delay={Math.min(i, 8) * 0.05}>
                   <Link href={`/members/${position.member.slug}?from=executives`}>
                     <Card className="overflow-hidden text-center transition-transform duration-300 hover:-translate-y-1">
-                      <div className="relative aspect-square w-full overflow-hidden sm:h-56 sm:aspect-auto">
+                      <div className="relative aspect-square w-full overflow-hidden">
                         <ImageWithSkeleton
-                          src={optimizedImageUrl(position.member.photoUrl ?? "/placeholders/member-avatar.svg", 700)}
+                          src={squareAvatarUrl(position.member.photoUrl ?? "/placeholders/member-avatar.svg", 700)}
                           alt={formatMemberName(position.member)}
                           className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
                         />

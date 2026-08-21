@@ -10,6 +10,7 @@
     "migrate": "prisma migrate dev",
     "seed": "prisma db seed",
     "backfill-executive-categories": "tsx prisma/backfill-executive-categories.ts",
+    "migrate-gallery-videos": "tsx prisma/migrate-gallery-videos.ts",
     "studio": "prisma studio"
   },
   "dependencies": {

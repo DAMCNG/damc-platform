@@ -3,6 +3,14 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   transpilePackages: ["@damc/ui", "@damc/db"],
+  // See apps/web/next.config.ts - same reasoning, admins expect their own
+  // edits to show up immediately when navigating the dashboard.
+  experimental: {
+    staleTimes: {
+      dynamic: 0,
+      static: 0,
+    },
+  },
   images: {
     remotePatterns: [{ protocol: "https", hostname: "*.supabase.co" }],
   },

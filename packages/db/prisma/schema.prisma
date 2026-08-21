@@ -257,6 +257,9 @@ model Achievement {
 }
 
 // ---------- Gallery ----------
+// A gallery item is an album: a title, optional description, and any mix of
+// photos and YouTube videos together (see GalleryPhoto/GalleryVideo below).
+// Sorted publicly by eventDate (falling back to createdAt), most recent first.
 
 enum GalleryMediaType {
   PHOTO
@@ -264,24 +267,41 @@ enum GalleryMediaType {
 }
 
 model GalleryItem {
-  id            String           @id @default(cuid())
+  id            String            @id @default(cuid())
   title         String
-  mediaType     GalleryMediaType
-  // Used for VIDEO (the YouTube link). PHOTO posts store their images in `photos`
-  // below instead — a post can carry more than one picture.
+  description   String?
+  // Legacy - superseded by photos[]/videos[] below, which let one album mix
+  // both instead of being strictly all-photo or a single video. Kept only so
+  // pre-migration rows keep their data; no longer read or written by new code.
+  mediaType     GalleryMediaType?
   url           String?
   thumbnailUrl  String?
   eventType     String?
-  downloadable  Boolean          @default(true)
+  downloadable  Boolean           @default(true)
   eventDate     DateTime?
+  views         Int               @default(0)
+  likes         Int               @default(0)
   photos        GalleryPhoto[]
+  videos        GalleryVideo[]
 
-  createdAt     DateTime         @default(now())
+  createdAt     DateTime          @default(now())
 
   @@index([eventType])
+  @@index([eventDate])
 }
 
 model GalleryPhoto {
+  id            String      @id @default(cuid())
+  galleryItem   GalleryItem @relation(fields: [galleryItemId], references: [id], onDelete: Cascade)
+  galleryItemId String
+  url           String
+  order         Int         @default(0)
+  createdAt     DateTime    @default(now())
+
+  @@index([galleryItemId])
+}
+
+model GalleryVideo {
   id            String      @id @default(cuid())
   galleryItem   GalleryItem @relation(fields: [galleryItemId], references: [id], onDelete: Cascade)
   galleryItemId String

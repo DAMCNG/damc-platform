@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { prisma } from "@damc/db";
 import { Container, SectionHeading, Reveal, Card, CardContent, ImageWithSkeleton } from "@damc/ui";
 import { MilestonesTimeline } from "@/components/about/milestones-timeline";
-import { optimizedImageUrl } from "@/lib/cloudinary";
+import { squareAvatarUrl } from "@/lib/cloudinary";
+import { FormattedText } from "@/components/formatted-text";
 
 export const metadata: Metadata = {
   title: "About us",
@@ -66,7 +67,9 @@ export default async function AboutPage() {
             <Card className="h-full">
               <CardContent>
                 <span className="text-xs font-bold uppercase tracking-wide text-gold-deep dark:text-gold-bright">Vision</span>
-                <p className="mt-3 font-display text-xl leading-relaxed text-ink dark:text-parchment">{vm.vision}</p>
+                <div className="mt-3">
+                  <FormattedText text={vm.vision} className="mb-4 font-display text-xl leading-relaxed text-ink dark:text-parchment last:mb-0" />
+                </div>
               </CardContent>
             </Card>
           </Reveal>
@@ -74,7 +77,9 @@ export default async function AboutPage() {
             <Card className="h-full">
               <CardContent>
                 <span className="text-xs font-bold uppercase tracking-wide text-gold-deep dark:text-gold-bright">Mission</span>
-                <p className="mt-3 font-display text-xl leading-relaxed text-ink dark:text-parchment">{vm.mission}</p>
+                <div className="mt-3">
+                  <FormattedText text={vm.mission} className="mb-4 font-display text-xl leading-relaxed text-ink dark:text-parchment last:mb-0" />
+                </div>
               </CardContent>
             </Card>
           </Reveal>
@@ -122,7 +127,7 @@ export default async function AboutPage() {
                   <div className="text-center">
                     <div className="relative mx-auto h-44 w-44 overflow-hidden rounded-full ring-4 ring-gold/20">
                       <ImageWithSkeleton
-                        src={optimizedImageUrl(f.photoUrl ?? "/placeholders/member-avatar.svg", 400)}
+                        src={squareAvatarUrl(f.photoUrl ?? "/placeholders/member-avatar.svg", 400)}
                         alt={f.name}
                         className="h-full w-full object-cover"
                       />

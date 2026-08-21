@@ -17,6 +17,7 @@
     "db:push": "pnpm --filter @damc/db push",
     "db:seed": "pnpm --filter @damc/db seed",
     "db:backfill-executives": "pnpm --filter @damc/db backfill-executive-categories",
+    "db:migrate-gallery-videos": "pnpm --filter @damc/db migrate-gallery-videos",
     "db:studio": "pnpm --filter @damc/db studio"
   },
   "devDependencies": {

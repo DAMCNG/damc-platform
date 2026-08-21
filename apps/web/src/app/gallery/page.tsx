@@ -1,20 +1,44 @@
 import type { Metadata } from "next";
 import { prisma } from "@damc/db";
 import { Container, Reveal } from "@damc/ui";
-import { GalleryGrid, type GalleryItemData } from "@/components/gallery/gallery-grid";
+import { GalleryGrid, type AlbumListData } from "@/components/gallery/gallery-grid";
 
 export const metadata: Metadata = {
   title: "Gallery",
-  description: "Photos and videos from DAMC meetings, ceremonies and events.",
+  description: "Photo and video albums from DAMC meetings, ceremonies and events.",
 };
 
 export const revalidate = 1800;
 
-export default async function GalleryPage() {
-  const items = await prisma.galleryItem.findMany({
-    orderBy: { createdAt: "desc" },
-    include: { photos: { orderBy: { order: "asc" } } },
+const PAGE_SIZE = 10;
+
+export default async function GalleryPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ type?: string; page?: string }>;
+}) {
+  const { type, page: pageParam } = await searchParams;
+  const page = Math.max(1, Number(pageParam) || 1);
+
+  const albums = await prisma.galleryItem.findMany({
+    where: type ? { eventType: type } : undefined,
+    include: { photos: { orderBy: { order: "asc" } }, videos: true },
   });
+
+  // Most recent first, using the event date when set, falling back to when
+  // it was uploaded - Prisma can't express that fallback in a single
+  // orderBy, and the dataset is small enough to sort in memory.
+  albums.sort((a, b) => (b.eventDate ?? b.createdAt).getTime() - (a.eventDate ?? a.createdAt).getTime());
+
+  const allTypes = await prisma.galleryItem.findMany({
+    where: { eventType: { not: null } },
+    select: { eventType: true },
+    distinct: ["eventType"],
+  });
+  const eventTypes = allTypes.map((t) => t.eventType).filter((t): t is string => Boolean(t)).sort();
+
+  const totalPages = Math.max(1, Math.ceil(albums.length / PAGE_SIZE));
+  const pageAlbums = albums.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
     <>
@@ -28,7 +52,7 @@ export default async function GalleryPage() {
               Gallery
             </h1>
             <p className="mt-5 text-lg text-bronze dark:text-parchment/70">
-              Photos and videos from meetings, ceremonies and celebrations.
+              Photo and video albums from meetings, ceremonies and celebrations.
             </p>
           </Reveal>
         </Container>
@@ -36,12 +60,18 @@ export default async function GalleryPage() {
 
       <section className="py-20 sm:py-28">
         <Container>
-          {items.length === 0 ? (
+          {albums.length === 0 ? (
             <p className="text-center text-bronze dark:text-parchment/70">
-              Photos and videos will appear here once uploaded in the admin dashboard.
+              Albums will appear here once added in the admin dashboard.
             </p>
           ) : (
-            <GalleryGrid items={items as GalleryItemData[]} />
+            <GalleryGrid
+              albums={pageAlbums as AlbumListData[]}
+              eventTypes={eventTypes}
+              activeType={type ?? null}
+              page={page}
+              totalPages={totalPages}
+            />
           )}
         </Container>
       </section>

@@ -42,7 +42,7 @@ export function HeroCarousel({ slides }: { slides: HeroSlideData[] }) {
           className="absolute inset-0 h-full w-full object-cover"
         />
       </AnimatePresence>
-      <div className="absolute inset-0 bg-gradient-to-b from-parchment-paper/85 via-parchment-paper/70 to-parchment-paper dark:from-ink/85 dark:via-ink/75 dark:to-ink" />
+      <div className="absolute inset-0 bg-gradient-to-b from-parchment-paper/55 via-parchment-paper/35 to-parchment-paper/85 dark:from-ink/70 dark:via-ink/55 dark:to-ink/90" />
       {next && <link rel="preload" as="image" href={optimizedImageUrl(next.imageUrl, 1920)} />}
     </div>
   );

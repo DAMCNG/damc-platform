@@ -34,8 +34,14 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  if (shouldReduceMotion) return <>{children}</>;
-
+  // shouldReduceMotion only reflects the real OS preference once mounted on
+  // the client (the server always renders its false/default value, since
+  // there's no window to read prefers-reduced-motion from). Branching the
+  // tree shape on it - e.g. returning bare `children` instead of the
+  // motion.div wrapper - renders something structurally different from what
+  // the server sent, which is a hydration mismatch for anyone whose OS has
+  // reduced motion on. Keep the same wrapper either way and just collapse
+  // the transition to instant, so the DOM shape never depends on this value.
   return (
     <AnimatePresence mode="wait">
       <motion.div
@@ -43,7 +49,7 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
         initial={{ opacity: 0, scale: 0.99 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.99 }}
-        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: shouldReduceMotion ? 0 : 0.5, ease: [0.16, 1, 0.3, 1] }}
       >
         {children}
       </motion.div>

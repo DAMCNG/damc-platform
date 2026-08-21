@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Container, SectionHeading, Reveal, Card, ImageWithSkeleton, Badge } from "@damc/ui";
-import { optimizedImageUrl } from "@/lib/cloudinary";
+import { squareAvatarUrl } from "@/lib/cloudinary";
 import { formatMemberName } from "@/lib/member-name";
 
 export interface LegalTeamMemberData {
@@ -27,7 +27,7 @@ export function LegalTeamSection({ members }: { members: LegalTeamMemberData[] }
                 <Card className="overflow-hidden text-center transition-transform duration-300 hover:-translate-y-1">
                   <div className="relative aspect-square w-full overflow-hidden">
                     <ImageWithSkeleton
-                      src={optimizedImageUrl(member.photoUrl ?? "/placeholders/member-avatar.svg", 700)}
+                      src={squareAvatarUrl(member.photoUrl ?? "/placeholders/member-avatar.svg", 700)}
                       alt={formatMemberName(member)}
                       className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
                     />

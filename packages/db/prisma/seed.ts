@@ -238,8 +238,9 @@ async function main() {
     await prisma.galleryItem.create({
       data: {
         title: "Annual General Meeting 2025",
-        mediaType: "PHOTO",
+        description: "Placeholder album description — members gathered for the club's annual general meeting.",
         eventType: "Meeting",
+        eventDate: new Date(new Date().getFullYear(), 5, 14),
         downloadable: true,
         photos: {
           create: [
@@ -252,10 +253,16 @@ async function main() {
     await prisma.galleryItem.create({
       data: {
         title: "Holiday Party Highlights",
-        mediaType: "VIDEO",
+        description: "Placeholder album description — an album can mix photos and videos together.",
         eventType: "Party",
+        eventDate: new Date(new Date().getFullYear(), 11, 20),
         downloadable: false,
-        url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        photos: {
+          create: [{ url: "/placeholders/gallery-photo.svg", order: 0 }],
+        },
+        videos: {
+          create: [{ url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", order: 0 }],
+        },
       },
     });
   }

@@ -5,7 +5,7 @@ import Fuse from "fuse.js";
 import { Search, Globe } from "lucide-react";
 import { FaPhone, FaWhatsapp } from "react-icons/fa6";
 import { Card, CardContent, Badge, cn, ImageWithSkeleton } from "@damc/ui";
-import { optimizedImageUrl } from "@/lib/cloudinary";
+import { squareAvatarUrl } from "@/lib/cloudinary";
 
 export interface BusinessCardData {
   id: string;
@@ -95,7 +95,7 @@ export function BusinessDirectory({ businesses }: { businesses: BusinessCardData
               <div className="flex items-center gap-3">
                 <span className="relative block h-14 w-14 flex-shrink-0 overflow-hidden rounded-full">
                   <ImageWithSkeleton
-                    src={optimizedImageUrl(biz.member.photoUrl ?? "/placeholders/member-avatar.svg", 150)}
+                    src={squareAvatarUrl(biz.member.photoUrl ?? "/placeholders/member-avatar.svg", 150)}
                     alt=""
                     className="h-full w-full object-cover"
                   />

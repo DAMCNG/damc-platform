@@ -11,6 +11,19 @@ export function ThemeToggle({ className }: { className?: string }) {
   React.useEffect(() => {
     setMounted(true);
     setIsDark(document.documentElement.classList.contains("dark"));
+
+    // ThemeScript only checks the OS preference once, at initial page load.
+    // If the user hasn't made an explicit choice (no stored override), keep
+    // following the OS setting live - e.g. Windows/Android switching to dark
+    // mode on a schedule while the site is already open in a tab.
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    function handleChange(e: MediaQueryListEvent) {
+      if (localStorage.getItem("damc-theme")) return;
+      setIsDark(e.matches);
+      document.documentElement.classList.toggle("dark", e.matches);
+    }
+    media.addEventListener("change", handleChange);
+    return () => media.removeEventListener("change", handleChange);
   }, []);
 
   function toggle() {

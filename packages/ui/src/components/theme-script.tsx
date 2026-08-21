@@ -1,10 +1,14 @@
 const THEME_SCRIPT = `
 (function () {
+  var isDark = false;
+  var stored = null;
   try {
-    var stored = localStorage.getItem("damc-theme");
-    var isDark = stored ? stored === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
-    document.documentElement.classList.toggle("dark", isDark);
+    stored = localStorage.getItem("damc-theme");
   } catch (e) {}
+  try {
+    isDark = stored ? stored === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  } catch (e) {}
+  document.documentElement.classList.toggle("dark", isDark);
 })();
 `;
 

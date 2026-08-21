@@ -6,15 +6,17 @@ import { FormField, inputClass } from "@/components/form-field";
 import { DeleteButton } from "@/components/delete-button";
 import { SubmitButton } from "@/components/submit-button";
 import { ImageUrlField } from "@/components/image-url-field";
-import { updateGalleryItem, addGalleryPhoto, deleteGalleryPhoto } from "../actions";
+import { updateGalleryItem, addGalleryPhoto, deleteGalleryPhoto, addGalleryVideo, deleteGalleryVideo } from "../actions";
 
 export default async function EditGalleryItemPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const item = await prisma.galleryItem.findUnique({
     where: { id },
-    include: { photos: { orderBy: { order: "asc" } } },
+    include: { photos: { orderBy: { order: "asc" } }, videos: { orderBy: { order: "asc" } } },
   });
   if (!item) notFound();
+
+  const eventDateValue = item.eventDate ? item.eventDate.toISOString().slice(0, 10) : undefined;
 
   return (
     <div className="max-w-2xl space-y-6">
@@ -29,13 +31,21 @@ export default async function EditGalleryItemPage({ params }: { params: Promise<
           <FormField label="Event type" htmlFor="eventType">
             <input id="eventType" name="eventType" defaultValue={item.eventType ?? ""} className={inputClass} />
           </FormField>
+          <FormField label="Event date (optional)" htmlFor="eventDate" hint="Used to sort albums, most recent first.">
+            <input id="eventDate" name="eventDate" type="date" defaultValue={eventDateValue} className={inputClass} />
+          </FormField>
+          <div className="flex items-end pb-2.5">
+            <label className="flex items-center gap-2 text-sm text-ink dark:text-parchment">
+              <input type="checkbox" name="downloadable" defaultChecked={item.downloadable} className="h-4 w-4 rounded border-ink/20" />
+              Photos downloadable
+            </label>
+          </div>
         </div>
-        {item.mediaType === "PHOTO" && (
-          <label className="mt-4 flex items-center gap-2 text-sm text-ink dark:text-parchment">
-            <input type="checkbox" name="downloadable" defaultChecked={item.downloadable} className="h-4 w-4 rounded border-ink/20" />
-            Downloadable
-          </label>
-        )}
+        <div className="mt-4">
+          <FormField label="Description (optional)" htmlFor="description">
+            <textarea id="description" name="description" rows={2} defaultValue={item.description ?? ""} className={inputClass} />
+          </FormField>
+        </div>
         <div className="mt-4 flex items-center gap-3">
           <SubmitButton pendingLabel="Saving…">Save changes</SubmitButton>
           <Link href="/gallery" className="text-sm font-semibold text-bronze hover:text-ink dark:text-parchment/60 dark:hover:text-parchment">
@@ -44,37 +54,67 @@ export default async function EditGalleryItemPage({ params }: { params: Promise<
         </div>
       </form>
 
-      {item.mediaType === "PHOTO" && (
-        <div className="rounded-xl2 border border-ink/8 bg-white p-6 shadow-card dark:border-parchment/10 dark:bg-ink-soft/40">
-          <h2 className="mb-1 font-display text-base font-semibold text-ink dark:text-parchment">Photos</h2>
-          <p className="mb-4 text-xs text-bronze dark:text-parchment/60">
-            {item.photos.length} photo{item.photos.length === 1 ? "" : "s"} in this post.
-          </p>
+      <div className="rounded-xl2 border border-ink/8 bg-white p-6 shadow-card dark:border-parchment/10 dark:bg-ink-soft/40">
+        <h2 className="mb-1 font-display text-base font-semibold text-ink dark:text-parchment">Photos</h2>
+        <p className="mb-4 text-xs text-bronze dark:text-parchment/60">
+          {item.photos.length} photo{item.photos.length === 1 ? "" : "s"} in this album.
+        </p>
 
-          {item.photos.length > 0 && (
-            <ul className="mb-5 grid grid-cols-3 gap-3 sm:grid-cols-4">
-              {item.photos.map((photo) => (
-                <li key={photo.id} className="overflow-hidden rounded-lg border border-ink/10 dark:border-parchment/15">
-                  <img src={photo.url} alt="" className="h-24 w-full object-cover" />
-                  <form action={deleteGalleryPhoto} className="p-1.5">
-                    <input type="hidden" name="id" value={photo.id} />
-                    <input type="hidden" name="galleryItemId" value={item.id} />
-                    <DeleteButton confirmMessage="Remove this photo?" />
-                  </form>
-                </li>
-              ))}
-            </ul>
-          )}
+        {item.photos.length > 0 && (
+          <ul className="mb-5 grid grid-cols-3 gap-3 sm:grid-cols-4">
+            {item.photos.map((photo) => (
+              <li key={photo.id} className="overflow-hidden rounded-lg border border-ink/10 dark:border-parchment/15">
+                <img src={photo.url} alt="" className="h-24 w-full object-cover" />
+                <form action={deleteGalleryPhoto} className="p-1.5">
+                  <input type="hidden" name="id" value={photo.id} />
+                  <input type="hidden" name="galleryItemId" value={item.id} />
+                  <DeleteButton confirmMessage="Remove this photo?" />
+                </form>
+              </li>
+            ))}
+          </ul>
+        )}
 
-          <form action={addGalleryPhoto} className="flex items-end gap-3">
-            <input type="hidden" name="galleryItemId" value={item.id} />
-            <div className="flex-1">
-              <ImageUrlField id="newPhotoUrl" name="url" label="Photo URL" />
-            </div>
-            <SubmitButton pendingLabel="Adding…">Add</SubmitButton>
-          </form>
-        </div>
-      )}
+        <form action={addGalleryPhoto} className="flex items-end gap-3">
+          <input type="hidden" name="galleryItemId" value={item.id} />
+          <div className="flex-1">
+            <ImageUrlField id="newPhotoUrl" name="url" label="Photo URL" />
+          </div>
+          <SubmitButton pendingLabel="Adding…">Add</SubmitButton>
+        </form>
+      </div>
+
+      <div className="rounded-xl2 border border-ink/8 bg-white p-6 shadow-card dark:border-parchment/10 dark:bg-ink-soft/40">
+        <h2 className="mb-1 font-display text-base font-semibold text-ink dark:text-parchment">Videos</h2>
+        <p className="mb-4 text-xs text-bronze dark:text-parchment/60">
+          {item.videos.length} video{item.videos.length === 1 ? "" : "s"} in this album.
+        </p>
+
+        {item.videos.length > 0 && (
+          <ul className="mb-5 space-y-2">
+            {item.videos.map((video) => (
+              <li key={video.id} className="flex items-center justify-between gap-3 rounded-lg border border-ink/10 px-4 py-2.5 dark:border-parchment/15">
+                <span className="truncate text-sm text-ink dark:text-parchment">{video.url}</span>
+                <form action={deleteGalleryVideo}>
+                  <input type="hidden" name="id" value={video.id} />
+                  <input type="hidden" name="galleryItemId" value={item.id} />
+                  <DeleteButton confirmMessage="Remove this video?" />
+                </form>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        <form action={addGalleryVideo} className="flex items-end gap-3">
+          <input type="hidden" name="galleryItemId" value={item.id} />
+          <div className="flex-1">
+            <FormField label="YouTube URL" htmlFor="newVideoUrl">
+              <input id="newVideoUrl" name="url" className={inputClass} placeholder="https://youtube.com/watch?v=..." />
+            </FormField>
+          </div>
+          <SubmitButton pendingLabel="Adding…">Add</SubmitButton>
+        </form>
+      </div>
     </div>
   );
 }

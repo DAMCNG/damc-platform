@@ -11,7 +11,7 @@ import { withinNextDays } from "@/lib/dates";
 import { buildTickerItems } from "@/lib/ticker";
 import { buildCalendarEntries } from "@/lib/calendar";
 import { Container, SectionHeading, Reveal, buttonVariants } from "@damc/ui";
-import type { GalleryItemData } from "@/components/gallery/gallery-grid";
+import type { AlbumListData } from "@/components/gallery/gallery-grid";
 
 export const revalidate = 900;
 
@@ -75,7 +75,7 @@ export default async function HomePage() {
       prisma.galleryItem.findMany({
         orderBy: { createdAt: "desc" },
         take: 12,
-        include: { photos: { orderBy: { order: "asc" } } },
+        include: { photos: { orderBy: { order: "asc" } }, videos: true },
       }),
     ]);
 
@@ -84,6 +84,9 @@ export default async function HomePage() {
   const birthdays = withinNextDays(members, 30).slice(0, 10);
   const calendarEntries = buildCalendarEntries({ events, members, posts: eventPosts });
   const tickerItems = buildTickerItems({ entries: calendarEntries.slice(0, 6), notices });
+  const recentAlbums = [...galleryItems].sort(
+    (a, b) => (b.eventDate ?? b.createdAt).getTime() - (a.eventDate ?? a.createdAt).getTime()
+  );
 
   return (
     <>
@@ -111,7 +114,7 @@ export default async function HomePage() {
             </div>
           </Container>
           <div className="mt-10">
-            <GalleryScroller items={galleryItems as GalleryItemData[]} />
+            <GalleryScroller albums={recentAlbums as AlbumListData[]} />
           </div>
         </section>
       )}

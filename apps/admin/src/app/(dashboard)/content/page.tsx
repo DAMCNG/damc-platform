@@ -129,10 +129,10 @@ export default async function ContentPage() {
       <form action={updateAboutContent} className="rounded-xl2 border border-ink/8 bg-white p-6 shadow-card dark:border-parchment/10 dark:bg-ink-soft/40">
         <h2 className="mb-4 font-display text-base font-semibold text-ink dark:text-parchment">About: vision, mission & motto</h2>
         <div className="space-y-4">
-          <FormField label="Vision" htmlFor="vision">
+          <FormField label="Vision" htmlFor="vision" hint="Leave a blank line between paragraphs. Use **bold** and *italic* for emphasis.">
             <textarea id="vision" name="vision" rows={2} defaultValue={vm?.vision} className={inputClass} />
           </FormField>
-          <FormField label="Mission" htmlFor="mission">
+          <FormField label="Mission" htmlFor="mission" hint="Leave a blank line between paragraphs. Use **bold** and *italic* for emphasis.">
             <textarea id="mission" name="mission" rows={2} defaultValue={vm?.mission} className={inputClass} />
           </FormField>
           <FormField label="Motto" htmlFor="motto">

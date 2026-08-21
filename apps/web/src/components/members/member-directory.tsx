@@ -6,7 +6,7 @@ import Fuse from "fuse.js";
 import { Search } from "lucide-react";
 import { Card, Badge, ImageWithSkeleton } from "@damc/ui";
 import { formatMonthDay } from "@/lib/dates";
-import { optimizedImageUrl } from "@/lib/cloudinary";
+import { squareAvatarUrl } from "@/lib/cloudinary";
 import { formatMemberName } from "@/lib/member-name";
 
 export interface MemberCardData {
@@ -58,7 +58,7 @@ export function MemberDirectory({ members }: { members: MemberCardData[] }) {
             <Card className="overflow-hidden text-center transition-transform duration-300 hover:-translate-y-1">
               <div className="relative aspect-square w-full overflow-hidden">
                 <ImageWithSkeleton
-                  src={optimizedImageUrl(member.photoUrl ?? "/placeholders/member-avatar.svg", 500)}
+                  src={squareAvatarUrl(member.photoUrl ?? "/placeholders/member-avatar.svg", 500)}
                   alt={formatMemberName(member)}
                   className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
                 />

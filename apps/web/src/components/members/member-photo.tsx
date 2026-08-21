@@ -3,7 +3,7 @@
 import * as React from "react";
 import { ImageWithSkeleton } from "@damc/ui";
 import { ImageLightbox } from "@/components/image-lightbox";
-import { optimizedImageUrl } from "@/lib/cloudinary";
+import { optimizedImageUrl, squareAvatarUrl } from "@/lib/cloudinary";
 
 export function MemberPhoto({ photoUrl, alt }: { photoUrl: string | null; alt: string }) {
   const [open, setOpen] = React.useState(false);
@@ -17,7 +17,7 @@ export function MemberPhoto({ photoUrl, alt }: { photoUrl: string | null; alt: s
         aria-label={photoUrl ? `View full photo of ${alt}` : alt}
         className="relative h-32 w-32 flex-shrink-0 overflow-hidden rounded-full transition-opacity hover:opacity-90"
       >
-        <ImageWithSkeleton src={optimizedImageUrl(src, 400)} alt={alt} className="h-full w-full object-cover" />
+        <ImageWithSkeleton src={squareAvatarUrl(src, 400)} alt={alt} className="h-full w-full object-cover" />
       </button>
       {photoUrl && (
         <ImageLightbox src={optimizedImageUrl(photoUrl, 1600)} alt={alt} open={open} onClose={() => setOpen(false)} />
