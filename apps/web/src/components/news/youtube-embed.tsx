@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import { Play } from "lucide-react";
-import { ImageWithSkeleton } from "@damc/ui";
-import { extractYouTubeId } from "@/lib/youtube";
+import { ImageWithSkeleton, cn } from "@damc/ui";
+import { extractYouTubeId, isYouTubeShort } from "@/lib/youtube";
 
 const THUMBNAIL_FALLBACKS = ["hqdefault.jpg", "mqdefault.jpg", "default.jpg"];
 
@@ -14,13 +14,19 @@ export function YouTubeEmbed({ url, title }: { url: string; title: string }) {
 
   if (!videoId) return null;
 
+  const isShort = isYouTubeShort(url);
   const thumbnailSrc =
     thumbnailStep < THUMBNAIL_FALLBACKS.length
       ? `https://i.ytimg.com/vi/${videoId}/${THUMBNAIL_FALLBACKS[thumbnailStep]}`
       : "/placeholders/gallery-photo.svg";
 
   return (
-    <div className="relative aspect-video w-full overflow-hidden rounded-xl2 bg-ink">
+    <div
+      className={cn(
+        "relative mx-auto w-full overflow-hidden rounded-xl2 bg-ink",
+        isShort ? "aspect-[9/16] max-w-xs" : "aspect-video"
+      )}
+    >
       {playing ? (
         <iframe
           className="h-full w-full"
