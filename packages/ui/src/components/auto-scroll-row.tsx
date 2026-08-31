@@ -4,6 +4,13 @@ import * as React from "react";
 import { useReducedMotion } from "framer-motion";
 import { cn } from "../lib/utils";
 
+// Cap actual DOM writes well below typical display refresh rates (60/90/120/144Hz).
+// A slow ambient marquee reads as identically smooth at ~30 updates/sec, for a
+// fraction of the layout/paint work - this matters a lot here since a single
+// page can have several of these rows animating at once.
+const TARGET_FPS = 30;
+const MIN_STEP_MS = 1000 / TARGET_FPS;
+
 export function AutoScrollRow({
   children,
   pxPerSecond = 28,
@@ -18,6 +25,7 @@ export function AutoScrollRow({
   className?: string;
 }) {
   const shouldReduceMotion = useReducedMotion();
+  const rootRef = React.useRef<HTMLDivElement>(null);
   const scrollerRef = React.useRef<HTMLDivElement>(null);
   const contentRef = React.useRef<HTMLDivElement>(null);
   const resumeTimer = React.useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -32,6 +40,7 @@ export function AutoScrollRow({
   const [overflowing, setOverflowing] = React.useState(false);
   const [interacting, setInteracting] = React.useState(false);
   const [dragging, setDragging] = React.useState(false);
+  const [inView, setInView] = React.useState(false);
 
   // Only duplicate the content and auto-scroll when it's actually wider than its container.
   React.useEffect(() => {
@@ -51,9 +60,23 @@ export function AutoScrollRow({
     return () => ro.disconnect();
   }, [children]);
 
+  // Pause the animation loop entirely while the row is off-screen. A single
+  // page can mount several of these at once (ticker, gallery, upcoming
+  // events, ...) and without this every one of them keeps its rAF loop
+  // running even though at most one or two are ever actually visible.
+  React.useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const io = new IntersectionObserver(([entry]) => setInView(entry?.isIntersecting ?? false), {
+      rootMargin: "200px 0px",
+    });
+    io.observe(root);
+    return () => io.disconnect();
+  }, []);
+
   // Auto-scroll via native scrollLeft (not a CSS transform) so dragging never fights it.
   React.useEffect(() => {
-    if (!overflowing || interacting || shouldReduceMotion) return;
+    if (!overflowing || interacting || shouldReduceMotion || !inView) return;
     const scroller = scrollerRef.current;
     if (!scroller) return;
 
@@ -66,20 +89,24 @@ export function AutoScrollRow({
     let position = scroller.scrollLeft;
 
     function step(now: number) {
-      const el = scrollerRef.current;
-      if (el) {
-        const dt = (now - last) / 1000;
-        last = now;
-        position += pxPerSecond * dt;
-        const half = el.scrollWidth / 2;
-        if (half > 0 && position >= half) position -= half;
-        el.scrollLeft = position;
+      // Still schedule every frame (cheap), but skip the actual DOM write -
+      // which can force layout/paint - on most of them. See TARGET_FPS above.
+      if (now - last >= MIN_STEP_MS) {
+        const el = scrollerRef.current;
+        if (el) {
+          const dt = (now - last) / 1000;
+          last = now;
+          position += pxPerSecond * dt;
+          const half = el.scrollWidth / 2;
+          if (half > 0 && position >= half) position -= half;
+          el.scrollLeft = position;
+        }
       }
       raf = requestAnimationFrame(step);
     }
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
-  }, [overflowing, interacting, shouldReduceMotion, pxPerSecond]);
+  }, [overflowing, interacting, shouldReduceMotion, pxPerSecond, inView]);
 
   React.useEffect(() => () => {
     if (resumeTimer.current) clearTimeout(resumeTimer.current);
@@ -138,7 +165,7 @@ export function AutoScrollRow({
   }
 
   return (
-    <div className={cn("relative -my-3", className)} role="region" aria-label={ariaLabel}>
+    <div ref={rootRef} className={cn("relative -my-3", className)} role="region" aria-label={ariaLabel}>
       <div
         ref={scrollerRef}
         className={cn(

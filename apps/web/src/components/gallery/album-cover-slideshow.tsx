@@ -5,7 +5,8 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ImageWithSkeleton } from "@damc/ui";
 import { optimizedImageUrl } from "@/lib/cloudinary";
 
-const INTERVAL_MS = 3000;
+const INTERVAL_MS = 4000;
+const FADE_SECONDS = 1.1;
 
 export function AlbumCoverSlideshow({
   photoUrls,
@@ -38,16 +39,22 @@ export function AlbumCoverSlideshow({
   }, [photoUrls.length, shouldReduceMotion, startDelay]);
 
   const src = photoUrls[index] ?? "/placeholders/gallery-photo.svg";
+  // Alternate the zoom direction each slide (in vs. out) so the motion reads
+  // as a deliberate, gentle Ken Burns pan rather than a mechanical repeat.
+  const zoomOut = index % 2 === 1;
 
   return (
     <div className="relative h-full w-full overflow-hidden">
       <AnimatePresence mode="sync" initial={false}>
         <motion.div
           key={index}
-          initial={{ x: "100%" }}
-          animate={{ x: "0%" }}
-          exit={{ x: "-100%" }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          initial={{ opacity: 0, scale: zoomOut ? 1.12 : 1 }}
+          animate={{ opacity: 1, scale: zoomOut ? 1 : 1.12 }}
+          exit={{ opacity: 0 }}
+          transition={{
+            opacity: { duration: FADE_SECONDS, ease: "easeInOut" },
+            scale: { duration: INTERVAL_MS / 1000 + FADE_SECONDS, ease: "linear" },
+          }}
           className="absolute inset-0"
         >
           <ImageWithSkeleton
