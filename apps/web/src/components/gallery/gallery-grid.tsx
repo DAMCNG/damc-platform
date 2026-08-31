@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Images, Play, Eye, Heart } from "lucide-react";
 import { Card, cn } from "@damc/ui";
 import { AlbumCoverSlideshow } from "./album-cover-slideshow";
-import { albumCoverUrls } from "@/lib/gallery-cover";
+import { albumCoverUrls, staggerDelay } from "@/lib/gallery-cover";
 import { formatEventDate } from "@/lib/dates";
 
 export interface AlbumListData {
@@ -75,14 +75,18 @@ export function GalleryGrid({
       )}
 
       <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-        {albums.map((album) => {
+        {albums.map((album, i) => {
           const photoCount = album.photos.length;
           const videoCount = album.videos.length;
           return (
             <Link key={album.id} href={`/gallery/${album.id}`} className="group">
               <Card className="overflow-hidden transition-transform duration-300 hover:-translate-y-1">
                 <div className="relative aspect-square w-full overflow-hidden">
-                  <AlbumCoverSlideshow photoUrls={albumCoverUrls(album)} alt={album.title} />
+                  <AlbumCoverSlideshow
+                    photoUrls={albumCoverUrls(album)}
+                    alt={album.title}
+                    startDelay={staggerDelay(i)}
+                  />
                   {videoCount > 0 && (
                     <span className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-ink/60 text-parchment">
                       <Play size={13} fill="currentColor" />

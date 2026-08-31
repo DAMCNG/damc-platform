@@ -136,11 +136,13 @@ export async function createFounder(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
   if (!name) return;
 
+  const maxOrder = await prisma.founder.aggregate({ _max: { order: true } });
   await prisma.founder.create({
     data: {
       name,
       title: String(formData.get("title") ?? "") || null,
       photoUrl: String(formData.get("photoUrl") ?? "") || null,
+      order: (maxOrder._max.order ?? -1) + 1,
     },
   });
 
@@ -177,6 +179,29 @@ export async function deleteFounder(formData: FormData) {
   revalidatePath("/content");
   await revalidateWebPaths(["/about"]);
   redirect(toastUrl("/content", `${founder.name} was removed.`));
+}
+
+export async function moveFounder(formData: FormData) {
+  await requireContentPermission();
+  const id = String(formData.get("id"));
+  const direction = String(formData.get("direction"));
+  if (!id) return;
+
+  const founders = await prisma.founder.findMany({ orderBy: { order: "asc" } });
+  const index = founders.findIndex((f) => f.id === id);
+  const swapIndex = direction === "up" ? index - 1 : index + 1;
+  if (index === -1 || swapIndex < 0 || swapIndex >= founders.length) return;
+
+  const current = founders[index]!;
+  const swap = founders[swapIndex]!;
+  await prisma.$transaction([
+    prisma.founder.update({ where: { id: current.id }, data: { order: swap.order } }),
+    prisma.founder.update({ where: { id: swap.id }, data: { order: current.order } }),
+  ]);
+
+  revalidatePath("/content");
+  await revalidateWebPaths(["/about"]);
+  redirect(toastUrl("/content", "Founder order updated."));
 }
 
 // ---- Milestones ----

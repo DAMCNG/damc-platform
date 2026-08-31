@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Play, Images } from "lucide-react";
 import { AutoScrollRow } from "@damc/ui";
 import { AlbumCoverSlideshow } from "@/components/gallery/album-cover-slideshow";
-import { albumCoverUrls } from "@/lib/gallery-cover";
+import { albumCoverUrls, staggerDelay } from "@/lib/gallery-cover";
 import type { AlbumListData } from "@/components/gallery/gallery-grid";
 
 export function GalleryScroller({ albums }: { albums: AlbumListData[] }) {
@@ -10,13 +10,17 @@ export function GalleryScroller({ albums }: { albums: AlbumListData[] }) {
 
   return (
     <AutoScrollRow ariaLabel="Recent gallery albums">
-      {albums.map((album) => (
+      {albums.map((album, i) => (
         <Link
           key={album.id}
           href={`/gallery/${album.id}`}
           className="group relative block h-48 w-64 flex-shrink-0 overflow-hidden rounded-xl2"
         >
-          <AlbumCoverSlideshow photoUrls={albumCoverUrls(album)} alt={album.title} />
+          <AlbumCoverSlideshow
+            photoUrls={albumCoverUrls(album)}
+            alt={album.title}
+            startDelay={staggerDelay(i)}
+          />
           {album.videos.length > 0 && (
             <span className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-ink/60 text-parchment">
               <Play size={14} fill="currentColor" />

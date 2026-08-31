@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Pencil } from "lucide-react";
+import { Pencil, ArrowUp, ArrowDown } from "lucide-react";
 import { prisma } from "@damc/db";
 import { PageHeader } from "@/components/page-header";
 import { FormField, inputClass } from "@/components/form-field";
@@ -16,9 +16,23 @@ import {
   updateContactContent,
   createFounder,
   deleteFounder,
+  moveFounder,
   createMilestone,
   deleteMilestone,
 } from "./actions";
+
+function MoveButton({ disabled, children, ...props }: React.ComponentProps<"button">) {
+  return (
+    <button
+      type="submit"
+      disabled={disabled}
+      className="rounded p-1 text-bronze transition-colors hover:bg-gold/10 hover:text-gold-deep disabled:pointer-events-none disabled:opacity-30 dark:text-parchment/60 dark:hover:text-gold-bright"
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
 
 export const dynamic = "force-dynamic";
 
@@ -161,12 +175,26 @@ export default async function ContentPage() {
           </AdminTableHead>
           <AdminTableBody>
             {founders.length === 0 && <EmptyState message="No founders added yet." />}
-            {founders.map((founder) => (
+            {founders.map((founder, i) => (
               <tr key={founder.id}>
                 <Td className="font-medium">{founder.name}</Td>
                 <Td className="text-bronze dark:text-parchment/60">{founder.title ?? "—"}</Td>
                 <Td>
                   <div className="flex items-center justify-end gap-1">
+                    <form action={moveFounder}>
+                      <input type="hidden" name="id" value={founder.id} />
+                      <input type="hidden" name="direction" value="up" />
+                      <MoveButton disabled={i === 0} aria-label="Move up">
+                        <ArrowUp size={16} />
+                      </MoveButton>
+                    </form>
+                    <form action={moveFounder}>
+                      <input type="hidden" name="id" value={founder.id} />
+                      <input type="hidden" name="direction" value="down" />
+                      <MoveButton disabled={i === founders.length - 1} aria-label="Move down">
+                        <ArrowDown size={16} />
+                      </MoveButton>
+                    </form>
                     <Link
                       href={`/content/founders/${founder.id}`}
                       aria-label="Edit"
