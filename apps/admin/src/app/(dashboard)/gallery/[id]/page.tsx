@@ -1,12 +1,34 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { ArrowUp, ArrowDown } from "lucide-react";
 import { prisma } from "@damc/db";
 import { PageHeader } from "@/components/page-header";
 import { FormField, inputClass } from "@/components/form-field";
 import { DeleteButton } from "@/components/delete-button";
 import { SubmitButton } from "@/components/submit-button";
 import { ImageUrlField } from "@/components/image-url-field";
-import { updateGalleryItem, addGalleryPhoto, deleteGalleryPhoto, addGalleryVideo, deleteGalleryVideo } from "../actions";
+import {
+  updateGalleryItem,
+  addGalleryPhoto,
+  deleteGalleryPhoto,
+  moveGalleryPhoto,
+  addGalleryVideo,
+  deleteGalleryVideo,
+  moveGalleryVideo,
+} from "../actions";
+
+function MoveButton({ disabled, children, ...props }: React.ComponentProps<"button">) {
+  return (
+    <button
+      type="submit"
+      disabled={disabled}
+      className="rounded p-1 text-bronze transition-colors hover:bg-gold/10 hover:text-gold-deep disabled:pointer-events-none disabled:opacity-30 dark:text-parchment/60 dark:hover:text-gold-bright"
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
 
 export default async function EditGalleryItemPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -62,14 +84,34 @@ export default async function EditGalleryItemPage({ params }: { params: Promise<
 
         {item.photos.length > 0 && (
           <ul className="mb-5 grid grid-cols-3 gap-3 sm:grid-cols-4">
-            {item.photos.map((photo) => (
+            {item.photos.map((photo, i) => (
               <li key={photo.id} className="overflow-hidden rounded-lg border border-ink/10 dark:border-parchment/15">
                 <img src={photo.url} alt="" className="h-24 w-full object-cover" />
-                <form action={deleteGalleryPhoto} className="p-1.5">
-                  <input type="hidden" name="id" value={photo.id} />
-                  <input type="hidden" name="galleryItemId" value={item.id} />
-                  <DeleteButton confirmMessage="Remove this photo?" />
-                </form>
+                <div className="flex items-center justify-between gap-1 p-1.5">
+                  <div className="flex items-center gap-0.5">
+                    <form action={moveGalleryPhoto}>
+                      <input type="hidden" name="id" value={photo.id} />
+                      <input type="hidden" name="galleryItemId" value={item.id} />
+                      <input type="hidden" name="direction" value="up" />
+                      <MoveButton disabled={i === 0} aria-label="Move earlier">
+                        <ArrowUp size={13} />
+                      </MoveButton>
+                    </form>
+                    <form action={moveGalleryPhoto}>
+                      <input type="hidden" name="id" value={photo.id} />
+                      <input type="hidden" name="galleryItemId" value={item.id} />
+                      <input type="hidden" name="direction" value="down" />
+                      <MoveButton disabled={i === item.photos.length - 1} aria-label="Move later">
+                        <ArrowDown size={13} />
+                      </MoveButton>
+                    </form>
+                  </div>
+                  <form action={deleteGalleryPhoto}>
+                    <input type="hidden" name="id" value={photo.id} />
+                    <input type="hidden" name="galleryItemId" value={item.id} />
+                    <DeleteButton confirmMessage="Remove this photo?" />
+                  </form>
+                </div>
               </li>
             ))}
           </ul>
@@ -92,14 +134,32 @@ export default async function EditGalleryItemPage({ params }: { params: Promise<
 
         {item.videos.length > 0 && (
           <ul className="mb-5 space-y-2">
-            {item.videos.map((video) => (
+            {item.videos.map((video, i) => (
               <li key={video.id} className="flex items-center justify-between gap-3 rounded-lg border border-ink/10 px-4 py-2.5 dark:border-parchment/15">
                 <span className="truncate text-sm text-ink dark:text-parchment">{video.url}</span>
-                <form action={deleteGalleryVideo}>
-                  <input type="hidden" name="id" value={video.id} />
-                  <input type="hidden" name="galleryItemId" value={item.id} />
-                  <DeleteButton confirmMessage="Remove this video?" />
-                </form>
+                <div className="flex items-center gap-1">
+                  <form action={moveGalleryVideo}>
+                    <input type="hidden" name="id" value={video.id} />
+                    <input type="hidden" name="galleryItemId" value={item.id} />
+                    <input type="hidden" name="direction" value="up" />
+                    <MoveButton disabled={i === 0} aria-label="Move earlier">
+                      <ArrowUp size={13} />
+                    </MoveButton>
+                  </form>
+                  <form action={moveGalleryVideo}>
+                    <input type="hidden" name="id" value={video.id} />
+                    <input type="hidden" name="galleryItemId" value={item.id} />
+                    <input type="hidden" name="direction" value="down" />
+                    <MoveButton disabled={i === item.videos.length - 1} aria-label="Move later">
+                      <ArrowDown size={13} />
+                    </MoveButton>
+                  </form>
+                  <form action={deleteGalleryVideo}>
+                    <input type="hidden" name="id" value={video.id} />
+                    <input type="hidden" name="galleryItemId" value={item.id} />
+                    <DeleteButton confirmMessage="Remove this video?" />
+                  </form>
+                </div>
               </li>
             ))}
           </ul>

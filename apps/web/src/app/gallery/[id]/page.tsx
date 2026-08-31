@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { prisma } from "@damc/db";
-import { Container, Reveal, Badge, buttonVariants } from "@damc/ui";
+import { Container, Reveal, Badge } from "@damc/ui";
 import { formatEventDate } from "@/lib/dates";
 import { FormattedText } from "@/components/formatted-text";
 import { GalleryEngagement } from "@/components/gallery/gallery-engagement";
 import { AlbumPhotoGrid } from "@/components/gallery/album-photo-grid";
-import { YouTubeEmbed } from "@/components/news/youtube-embed";
+import { AlbumVideoGrid } from "@/components/gallery/album-video-grid";
+import { BackLink } from "@/components/back-link";
 
 export const revalidate = 1800;
 
@@ -58,9 +57,7 @@ export default async function AlbumPage({ params }: { params: Promise<{ id: stri
     <article className="py-16 sm:py-24">
       <Container className="max-w-4xl">
         <Reveal>
-          <Link href="/gallery" className={buttonVariants({ variant: "ghost", size: "sm" })}>
-            <ArrowLeft size={16} className="mr-1.5" /> Back to gallery
-          </Link>
+          <BackLink href="/gallery" label="Back to gallery" canGoBack />
 
           {album.eventType && (
             <Badge variant="gold" className="mt-6">
@@ -88,10 +85,8 @@ export default async function AlbumPage({ params }: { params: Promise<{ id: stri
 
         {album.videos.length > 0 && (
           <Reveal delay={0.15}>
-            <div className="mt-8 space-y-6">
-              {album.videos.map((video) => (
-                <YouTubeEmbed key={video.id} url={video.url} title={album.title} />
-              ))}
+            <div className="mt-8">
+              <AlbumVideoGrid videos={album.videos} title={album.title} />
             </div>
           </Reveal>
         )}

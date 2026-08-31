@@ -108,6 +108,29 @@ export async function deleteGalleryPhoto(formData: FormData) {
   redirect(toastUrl(`/gallery/${galleryItemId}`, "Photo removed."));
 }
 
+export async function moveGalleryPhoto(formData: FormData) {
+  await requireContentPermission();
+  const id = String(formData.get("id"));
+  const galleryItemId = String(formData.get("galleryItemId") ?? "");
+  const direction = String(formData.get("direction"));
+  if (!id || !galleryItemId) return;
+
+  const photos = await prisma.galleryPhoto.findMany({ where: { galleryItemId }, orderBy: { order: "asc" } });
+  const index = photos.findIndex((p) => p.id === id);
+  const swapIndex = direction === "up" ? index - 1 : index + 1;
+  if (index === -1 || swapIndex < 0 || swapIndex >= photos.length) return;
+
+  const current = photos[index]!;
+  const swap = photos[swapIndex]!;
+  await prisma.$transaction([
+    prisma.galleryPhoto.update({ where: { id: current.id }, data: { order: swap.order } }),
+    prisma.galleryPhoto.update({ where: { id: swap.id }, data: { order: current.order } }),
+  ]);
+
+  await revalidateGallery(galleryItemId);
+  redirect(toastUrl(`/gallery/${galleryItemId}`, "Photo order updated."));
+}
+
 // ---- Videos ----
 
 export async function addGalleryVideo(formData: FormData) {
@@ -135,4 +158,27 @@ export async function deleteGalleryVideo(formData: FormData) {
   await prisma.galleryVideo.delete({ where: { id } });
   await revalidateGallery(galleryItemId);
   redirect(toastUrl(`/gallery/${galleryItemId}`, "Video removed."));
+}
+
+export async function moveGalleryVideo(formData: FormData) {
+  await requireContentPermission();
+  const id = String(formData.get("id"));
+  const galleryItemId = String(formData.get("galleryItemId") ?? "");
+  const direction = String(formData.get("direction"));
+  if (!id || !galleryItemId) return;
+
+  const videos = await prisma.galleryVideo.findMany({ where: { galleryItemId }, orderBy: { order: "asc" } });
+  const index = videos.findIndex((v) => v.id === id);
+  const swapIndex = direction === "up" ? index - 1 : index + 1;
+  if (index === -1 || swapIndex < 0 || swapIndex >= videos.length) return;
+
+  const current = videos[index]!;
+  const swap = videos[swapIndex]!;
+  await prisma.$transaction([
+    prisma.galleryVideo.update({ where: { id: current.id }, data: { order: swap.order } }),
+    prisma.galleryVideo.update({ where: { id: swap.id }, data: { order: current.order } }),
+  ]);
+
+  await revalidateGallery(galleryItemId);
+  redirect(toastUrl(`/gallery/${galleryItemId}`, "Video order updated."));
 }
