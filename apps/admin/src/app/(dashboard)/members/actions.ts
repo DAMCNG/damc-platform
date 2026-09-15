@@ -2,10 +2,18 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import bcrypt from "bcryptjs";
 import { prisma, MaritalStatus } from "@damc/db";
 import { requireContentPermission } from "@/lib/guards";
+import { generateTempPassword } from "@/lib/passwords";
 import { revalidateWebPaths } from "@/lib/revalidate-web";
 import { toastUrl } from "@/lib/toast-redirect";
+
+export interface MemberActionResult {
+  success: boolean;
+  message: string;
+  tempPassword?: string;
+}
 
 function slugify(first: string, last: string) {
   return `${first}-${last}`
@@ -152,3 +160,67 @@ export async function deleteBusiness(formData: FormData) {
   await revalidateMemberPaths(member.slug);
   redirect(toastUrl(`/members/${memberId}`, "Business removed."));
 }
+
+// ---- Member Portal Password Management ----
+
+export async function resetMemberPassword(
+  _prevState: MemberActionResult | undefined,
+  formData: FormData
+): Promise<MemberActionResult> {
+  await requireContentPermission();
+  const id = String(formData.get("id") ?? "");
+
+  const member = await prisma.member.findUnique({ where: { id } });
+  if (!member) return { success: false, message: "Member not found." };
+
+  const tempPassword = generateTempPassword(8);
+  const passwordHash = await bcrypt.hash(tempPassword, 10);
+
+  await prisma.member.update({
+    where: { id },
+    data: {
+      passwordHash,
+      mustChangePassword: true,
+    },
+  });
+
+  revalidatePath(`/members/${id}`);
+  return {
+    success: true,
+    message: `Password reset for ${member.firstName} ${member.lastName}.`,
+    tempPassword,
+  };
+}
+
+export async function setMemberCustomPassword(
+  _prevState: MemberActionResult | undefined,
+  formData: FormData
+): Promise<MemberActionResult> {
+  await requireContentPermission();
+  const id = String(formData.get("id") ?? "");
+  const newPassword = String(formData.get("newPassword") ?? "").trim();
+
+  if (!newPassword || newPassword.length < 6) {
+    return { success: false, message: "Password must be at least 6 characters long." };
+  }
+
+  const member = await prisma.member.findUnique({ where: { id } });
+  if (!member) return { success: false, message: "Member not found." };
+
+  const passwordHash = await bcrypt.hash(newPassword, 10);
+
+  await prisma.member.update({
+    where: { id },
+    data: {
+      passwordHash,
+      mustChangePassword: false,
+    },
+  });
+
+  revalidatePath(`/members/${id}`);
+  return {
+    success: true,
+    message: `Password updated for ${member.firstName} ${member.lastName}.`,
+  };
+}
+

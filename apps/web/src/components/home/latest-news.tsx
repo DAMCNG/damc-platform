@@ -44,7 +44,7 @@ export function LatestNews({ posts }: { posts: Post[] }) {
                   </h3>
                   {post.publishedAt && (
                     <p className="mt-1 text-xs text-bronze dark:text-parchment/60">
-                      {formatEventDate(post.publishedAt)}
+                      Posted on: {formatEventDate(post.publishedAt)}
                     </p>
                   )}
                   <div className="mt-3 flex items-center gap-4 text-xs text-bronze dark:text-parchment/60">

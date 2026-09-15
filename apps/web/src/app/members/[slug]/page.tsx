@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Globe } from "lucide-react";
+import Link from "next/link";
+import { Globe, Lock } from "lucide-react";
 import { prisma } from "@damc/db";
 import { Container, Reveal, Badge, Card, CardContent } from "@damc/ui";
-import { formatMonthDay } from "@/lib/dates";
 import { formatMemberName } from "@/lib/member-name";
 import { MARITAL_STATUS_LABELS } from "@/lib/labels";
 import { MemberPhoto } from "@/components/members/member-photo";
 import { FormattedText } from "@/components/formatted-text";
 import { BackLink } from "@/components/back-link";
+import { getMemberSession } from "@/lib/member-session";
 
 export const revalidate = 1800;
 
@@ -29,10 +30,10 @@ export async function generateMetadata({
   const name = formatMemberName(member);
   return {
     title: name,
-    description: member.bio ?? `${name}, Dignified Articulate Men's Club member profile.`,
+    description: `${name}, Dignified Articulate Men's Club member profile.`,
     openGraph: {
       title: name,
-      description: member.bio ?? undefined,
+      description: `${name}, Dignified Articulate Men's Club member profile.`,
       images: member.photoUrl ? [member.photoUrl] : undefined,
     },
   };
@@ -45,6 +46,7 @@ export default async function MemberProfilePage({
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ from?: string }>;
 }) {
+  const session = await getMemberSession();
   const { slug } = await params;
   const { from } = await searchParams;
   const member = await prisma.member.findUnique({
@@ -61,13 +63,9 @@ export default async function MemberProfilePage({
 
   const details: { label: string; value: string }[] = [];
   if (member.membershipNumber) details.push({ label: "Membership no.", value: member.membershipNumber });
-  if (member.occupation) details.push({ label: "Occupation", value: member.occupation });
   if (member.stateOfOrigin) details.push({ label: "State of origin", value: member.stateOfOrigin });
   if (member.yearJoined) details.push({ label: "Year joined", value: String(member.yearJoined) });
   if (member.maritalStatus) details.push({ label: "Marital status", value: MARITAL_STATUS_LABELS[member.maritalStatus] });
-  if (member.birthMonth && member.birthDay) {
-    details.push({ label: "Birthday", value: formatMonthDay(member.birthMonth, member.birthDay) });
-  }
 
   return (
     <article className="py-16 sm:py-24">
@@ -93,10 +91,28 @@ export default async function MemberProfilePage({
           </div>
         </Reveal>
 
-        {member.bio && (
+        {session && member.bio && (
           <Reveal delay={0.1}>
             <div className="mt-8">
               <FormattedText text={member.bio} className="mb-4 leading-relaxed text-ink dark:text-parchment/90 last:mb-0" />
+            </div>
+          </Reveal>
+        )}
+
+        {!session && member.bio && (
+          <Reveal delay={0.1}>
+            <div className="mt-8 flex items-center gap-2.5 rounded-xl border border-ink/8 bg-parchment/40 px-4 py-3 text-xs text-bronze dark:border-parchment/10 dark:bg-ink-soft/20 dark:text-parchment/60">
+              <Lock size={14} className="flex-shrink-0 text-gold-deep dark:text-gold-bright" />
+              <span>
+                Member bio is private.{" "}
+                <Link
+                  href={`/members/login?callbackUrl=/members/${member.slug}`}
+                  className="font-semibold text-gold-deep hover:underline dark:text-gold-bright"
+                >
+                  Sign in to view
+                </Link>
+                .
+              </span>
             </div>
           </Reveal>
         )}

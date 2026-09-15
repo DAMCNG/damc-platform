@@ -4,6 +4,7 @@ import { ThemeScript } from "@damc/ui";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
 import { HeroLogoProvider } from "@/components/hero-logo-context";
+import { getMemberSession } from "@/lib/member-session";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -44,7 +45,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const session = await getMemberSession();
+  const memberNavSession = session
+    ? { firstName: session.firstName, membershipNumber: session.membershipNumber }
+    : null;
+
   return (
     <html lang="en" className={`${fraunces.variable} ${manrope.variable}`} suppressHydrationWarning>
       <head>
@@ -52,7 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="flex min-h-screen flex-col font-sans">
         <HeroLogoProvider>
-          <SiteNav />
+          <SiteNav memberSession={memberNavSession} />
           <main className="flex-1">{children}</main>
         </HeroLogoProvider>
         <SiteFooter />

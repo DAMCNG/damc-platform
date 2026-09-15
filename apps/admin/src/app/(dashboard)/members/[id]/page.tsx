@@ -3,6 +3,7 @@ import { prisma } from "@damc/db";
 import { PageHeader } from "@/components/page-header";
 import { MemberForm } from "@/components/members/member-form";
 import { MemberBusinessesPanel } from "@/components/members/member-businesses-panel";
+import { MemberResetPasswordCard } from "@/components/members/member-reset-password-card";
 import { updateMember } from "../actions";
 
 export default async function EditMemberPage({ params }: { params: Promise<{ id: string }> }) {
@@ -14,6 +15,12 @@ export default async function EditMemberPage({ params }: { params: Promise<{ id:
     <div className="space-y-6">
       <PageHeader title={`Edit ${member.firstName} ${member.lastName}`} />
       <MemberForm member={member} action={updateMember} />
+      <MemberResetPasswordCard
+        memberId={member.id}
+        hasPassword={!!member.passwordHash}
+        mustChangePassword={member.mustChangePassword}
+        membershipNumber={member.membershipNumber}
+      />
       <MemberBusinessesPanel memberId={member.id} businesses={member.businesses} />
     </div>
   );

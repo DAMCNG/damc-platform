@@ -9,6 +9,7 @@ dist
 .vercel
 .DS_Store
 next-env.d.ts
+.megaignore
 
 # Local tooling config — not part of the project deliverable
 .claude

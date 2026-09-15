@@ -4,8 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import Fuse from "fuse.js";
 import { Search } from "lucide-react";
-import { Card, Badge, ImageWithSkeleton } from "@damc/ui";
-import { formatMonthDay } from "@/lib/dates";
+import { Card, ImageWithSkeleton } from "@damc/ui";
 import { squareAvatarUrl } from "@/lib/cloudinary";
 import { formatMemberName } from "@/lib/member-name";
 
@@ -16,9 +15,7 @@ export interface MemberCardData {
   firstName: string;
   lastName: string;
   photoUrl: string | null;
-  birthMonth: number | null;
-  birthDay: number | null;
-  businesses: { name: string; category: string }[];
+  membershipNumber: string | null;
 }
 
 export function MemberDirectory({ members }: { members: MemberCardData[] }) {
@@ -27,7 +24,7 @@ export function MemberDirectory({ members }: { members: MemberCardData[] }) {
   const fuse = React.useMemo(
     () =>
       new Fuse(members, {
-        keys: ["firstName", "lastName", "businesses.name", "businesses.category"],
+        keys: ["firstName", "lastName", "membershipNumber"],
         threshold: 0.35,
       }),
     [members]
@@ -43,7 +40,7 @@ export function MemberDirectory({ members }: { members: MemberCardData[] }) {
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search by name or business…"
+          placeholder="Search by name or membership number…"
           className="w-full rounded-full border border-ink/12 bg-white py-3 pl-11 pr-4 text-sm text-ink outline-none transition-colors focus:border-gold-deep dark:border-parchment/15 dark:bg-ink-soft/40 dark:text-parchment"
         />
       </div>
@@ -67,18 +64,9 @@ export function MemberDirectory({ members }: { members: MemberCardData[] }) {
                 <div className="font-display text-sm font-semibold text-ink dark:text-parchment">
                   {formatMemberName(member)}
                 </div>
-                {member.businesses.length > 0 && (
-                  <div className="mt-1.5 flex flex-wrap justify-center gap-1">
-                    {member.businesses.map((biz) => (
-                      <Badge key={biz.category + biz.name} variant="gold" className="text-[10px]">
-                        {biz.category}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-                {member.birthMonth && member.birthDay && (
-                  <div className="mt-1.5 text-xs text-bronze-soft dark:text-parchment/50">
-                    {formatMonthDay(member.birthMonth, member.birthDay)}
+                {member.membershipNumber && (
+                  <div className="mt-1 font-mono text-xs font-semibold text-gold-deep dark:text-gold-bright">
+                    No: {member.membershipNumber}
                   </div>
                 )}
               </div>

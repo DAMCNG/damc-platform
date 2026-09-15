@@ -35,7 +35,9 @@ model Member {
   birthMonth          Int?      // 1-12
   birthDay            Int?      // 1-31
 
-  membershipNumber    String?
+  membershipNumber    String?   @unique
+  passwordHash        String?
+  mustChangePassword  Boolean   @default(false)
   occupation          String?
   stateOfOrigin       String?
   yearJoined          Int?

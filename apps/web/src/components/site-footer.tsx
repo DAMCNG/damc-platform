@@ -97,6 +97,11 @@ export async function SiteFooter() {
               </li>
             ))}
             <li>
+              <Link href="/members/portal" className="text-sm text-parchment/80 hover:text-gold-bright">
+                Members&rsquo; Area
+              </Link>
+            </li>
+            <li>
               <Link href="/contact" className="text-sm text-parchment/80 hover:text-gold-bright">
                 Contact
               </Link>

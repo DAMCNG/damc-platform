@@ -71,7 +71,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           <div className="mt-4 flex flex-wrap items-center justify-between gap-4 border-b border-ink/8 pb-6 dark:border-parchment/10">
             <p className="text-sm text-bronze dark:text-parchment/60">
               By {post.authorName}
-              {post.publishedAt ? ` · ${formatEventDate(post.publishedAt)}` : ""}
+              {post.publishedAt ? ` · Posted on: ${formatEventDate(post.publishedAt)}` : ""}
             </p>
             <PostEngagement slug={post.slug} initialViews={post.views} initialLikes={post.likes} />
           </div>

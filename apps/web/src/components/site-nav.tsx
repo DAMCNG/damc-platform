@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User } from "lucide-react";
 import { cn, buttonVariants, BrandMark, ThemeToggle } from "@damc/ui";
 import { useHeroLogo } from "@/components/hero-logo-context";
 
@@ -20,7 +20,11 @@ const NAV_LINKS = [
   { href: "/contact", label: "Contact" },
 ];
 
-export function SiteNav() {
+export function SiteNav({
+  memberSession,
+}: {
+  memberSession?: { firstName: string; membershipNumber: string } | null;
+}) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = React.useState(false);
   const [open, setOpen] = React.useState(false);
@@ -98,6 +102,22 @@ export function SiteNav() {
         </ul>
 
         <div className="hidden items-center lg:flex">
+          {memberSession ? (
+            <Link
+              href="/members/portal"
+              className="mr-3 flex items-center gap-1.5 rounded-full border border-gold-deep/30 bg-gold/10 px-3 py-1.5 text-xs font-semibold text-gold-deep transition-colors hover:border-gold-deep hover:bg-gold/20 dark:border-gold-bright/30 dark:bg-gold-bright/10 dark:text-gold-bright dark:hover:border-gold-bright"
+            >
+              <User size={13} />
+              <span>Portal ({memberSession.membershipNumber})</span>
+            </Link>
+          ) : (
+            <Link
+              href="/members/login"
+              className="mr-3 text-xs font-semibold uppercase tracking-wide text-ink/70 transition-colors hover:text-gold-deep dark:text-parchment/70 dark:hover:text-gold-bright"
+            >
+              Member Login
+            </Link>
+          )}
           <ThemeToggle className="mr-4" />
           <span className="mr-4 h-6 w-px bg-ink/10 dark:bg-parchment/15" aria-hidden="true" />
           <Link
@@ -130,6 +150,27 @@ export function SiteNav() {
             className="overflow-hidden border-t border-ink/10 bg-parchment-paper dark:border-parchment/10 dark:bg-ink lg:hidden"
           >
             <ul className="flex flex-col gap-1 px-6 py-4">
+              {memberSession ? (
+                <li className="mb-2 border-b border-ink/10 pb-2 dark:border-parchment/10">
+                  <Link
+                    href="/members/portal"
+                    className="flex items-center gap-2 rounded-lg bg-gold/10 px-3 py-2 text-sm font-semibold uppercase tracking-wide text-gold-deep dark:bg-gold-bright/10 dark:text-gold-bright"
+                  >
+                    <User size={15} />
+                    <span>Member Portal ({memberSession.membershipNumber})</span>
+                  </Link>
+                </li>
+              ) : (
+                <li className="mb-2 border-b border-ink/10 pb-2 dark:border-parchment/10">
+                  <Link
+                    href="/members/login"
+                    className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold uppercase tracking-wide text-gold-deep dark:text-gold-bright"
+                  >
+                    <User size={15} />
+                    <span>Members&rsquo; Area Login</span>
+                  </Link>
+                </li>
+              )}
               {NAV_LINKS.map((link) => (
                 <li key={link.href}>
                   <Link

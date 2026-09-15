@@ -131,7 +131,7 @@ export default async function NewsPage({
                         </h3>
                         <p className="mt-1 text-xs text-bronze dark:text-parchment/60">
                           {post.authorName}
-                          {post.publishedAt ? ` · ${formatEventDate(post.publishedAt)}` : ""}
+                          {post.publishedAt ? ` · Posted on: ${formatEventDate(post.publishedAt)}` : ""}
                         </p>
                         <div className="mt-4 flex items-center gap-4 text-xs text-bronze dark:text-parchment/60">
                           <span className="flex items-center gap-1"><Eye size={14} /> {post.views}</span>

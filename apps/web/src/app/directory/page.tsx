@@ -1,16 +1,61 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { Lock, ArrowRight } from "lucide-react";
 import { prisma } from "@damc/db";
-import { Container, Reveal } from "@damc/ui";
+import { Container, Reveal, Card, buttonVariants, cn } from "@damc/ui";
 import { BusinessDirectory, type BusinessCardData } from "@/components/directory/business-directory";
+import { getMemberSession } from "@/lib/member-session";
 
 export const metadata: Metadata = {
   title: "Business Directory",
   description: "Search DAMC members' businesses by trade or industry and support a fellow member.",
 };
 
-export const revalidate = 1800;
-
 export default async function DirectoryPage() {
+  const session = await getMemberSession();
+
+  if (!session) {
+    return (
+      <div className="py-20 sm:py-28">
+        <Container className="max-w-xl text-center">
+          <Reveal>
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gold/15 text-gold-deep dark:bg-gold-bright/15 dark:text-gold-bright">
+              <Lock size={30} />
+            </div>
+
+            <span className="mt-6 block text-xs font-bold uppercase tracking-[0.14em] text-gold-deep dark:text-gold-bright">
+              Exclusive Member Directory
+            </span>
+
+            <h1 className="mt-2 text-balance font-display text-3xl font-semibold text-ink dark:text-parchment sm:text-4xl">
+              Restricted to Club Members
+            </h1>
+
+            <p className="mt-4 text-base leading-relaxed text-bronze dark:text-parchment/70">
+              To protect the privacy and commercial contacts of our members, the DAMC Business Directory is accessible only to verified club members.
+            </p>
+
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Link
+                href="/members/login?callbackUrl=/directory"
+                className={cn(buttonVariants({ size: "lg" }), "w-full sm:w-auto shadow-sm")}
+              >
+                <span>Sign In with Membership Number</span>
+                <ArrowRight size={16} className="ml-1.5" />
+              </Link>
+              <Link
+                href="/contact"
+                className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full sm:w-auto")}
+              >
+                Enquire About Membership
+              </Link>
+            </div>
+          </Reveal>
+        </Container>
+      </div>
+    );
+  }
+
   const businesses = await prisma.business.findMany({
     where: { member: { isActive: true } },
     orderBy: { category: "asc" },

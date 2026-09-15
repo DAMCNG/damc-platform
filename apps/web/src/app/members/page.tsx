@@ -23,6 +23,7 @@ export default async function MembersPage() {
         firstName: true,
         lastName: true,
         photoUrl: true,
+        membershipNumber: true,
         legalTeamTitle: true,
       },
     }),
@@ -36,9 +37,7 @@ export default async function MembersPage() {
         firstName: true,
         lastName: true,
         photoUrl: true,
-        birthMonth: true,
-        birthDay: true,
-        businesses: { select: { name: true, category: true } },
+        membershipNumber: true,
       },
     }),
   ]);
@@ -57,7 +56,7 @@ export default async function MembersPage() {
               Members
             </h1>
             <p className="mt-5 text-lg text-bronze dark:text-parchment/70">
-              {total} dignified, articulate men. Search by name, trade or industry.
+              {total} dignified, articulate men. Search by name or membership number.
             </p>
           </Reveal>
         </Container>

@@ -10,6 +10,7 @@ export interface LegalTeamMemberData {
   firstName: string;
   lastName: string;
   photoUrl: string | null;
+  membershipNumber?: string | null;
   legalTeamTitle: string | null;
 }
 
@@ -37,6 +38,11 @@ export function LegalTeamSection({ members }: { members: LegalTeamMemberData[] }
                     <div className="mt-2 font-display text-lg font-semibold text-ink dark:text-parchment">
                       {formatMemberName(member)}
                     </div>
+                    {member.membershipNumber && (
+                      <div className="mt-1 font-mono text-xs font-semibold text-gold-deep dark:text-gold-bright">
+                        No: {member.membershipNumber}
+                      </div>
+                    )}
                   </div>
                 </Card>
               </Link>

@@ -18,7 +18,7 @@ export default async function ExecutivesPage() {
     include: {
       positions: {
         where: { isCurrent: true },
-        include: { member: { include: { businesses: true } } },
+        include: { member: true },
       },
     },
   });
@@ -71,11 +71,6 @@ export default async function ExecutivesPage() {
                         <div className="mt-1.5 font-display text-lg font-semibold text-ink dark:text-parchment">
                           {formatMemberName(position.member)}
                         </div>
-                        {position.member.businesses[0] && (
-                          <div className="mt-1 text-sm text-bronze dark:text-parchment/60">
-                            {position.member.businesses[0].category}
-                          </div>
-                        )}
                       </div>
                     </Card>
                   </Link>
