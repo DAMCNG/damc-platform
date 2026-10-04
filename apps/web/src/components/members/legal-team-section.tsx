@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Container, SectionHeading, Reveal, Card, ImageWithSkeleton, Badge } from "@damc/ui";
 import { squareAvatarUrl } from "@/lib/cloudinary";
-import { formatMemberName } from "@/lib/member-name";
+import { formatMemberName, formatArticulateNumber } from "@/lib/member-name";
 
 export interface LegalTeamMemberData {
   id: string;
@@ -40,7 +40,7 @@ export function LegalTeamSection({ members }: { members: LegalTeamMemberData[] }
                     </div>
                     {member.membershipNumber && (
                       <div className="mt-1 font-mono text-xs font-semibold text-gold-deep dark:text-gold-bright">
-                        No: {member.membershipNumber}
+                        {formatArticulateNumber(member.membershipNumber)}
                       </div>
                     )}
                   </div>

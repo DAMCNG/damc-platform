@@ -6,7 +6,7 @@ import Fuse from "fuse.js";
 import { Search } from "lucide-react";
 import { Card, ImageWithSkeleton } from "@damc/ui";
 import { squareAvatarUrl } from "@/lib/cloudinary";
-import { formatMemberName } from "@/lib/member-name";
+import { formatMemberName, formatArticulateNumber } from "@/lib/member-name";
 
 export interface MemberCardData {
   id: string;
@@ -40,7 +40,7 @@ export function MemberDirectory({ members }: { members: MemberCardData[] }) {
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search by name or membership number…"
+          placeholder="Search by name or articulate number…"
           className="w-full rounded-full border border-ink/12 bg-white py-3 pl-11 pr-4 text-sm text-ink outline-none transition-colors focus:border-gold-deep dark:border-parchment/15 dark:bg-ink-soft/40 dark:text-parchment"
         />
       </div>
@@ -66,7 +66,7 @@ export function MemberDirectory({ members }: { members: MemberCardData[] }) {
                 </div>
                 {member.membershipNumber && (
                   <div className="mt-1 font-mono text-xs font-semibold text-gold-deep dark:text-gold-bright">
-                    No: {member.membershipNumber}
+                    {formatArticulateNumber(member.membershipNumber)}
                   </div>
                 )}
               </div>

@@ -20,43 +20,48 @@ export async function loginMember(
   _prevState: LoginResult | undefined,
   formData: FormData
 ): Promise<LoginResult> {
-  const membershipNumber = String(formData.get("membershipNumber") ?? "").trim();
+  const rawNumber = String(formData.get("membershipNumber") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const callbackUrl = String(formData.get("callbackUrl") ?? "/directory").trim();
 
-  if (!membershipNumber || !password) {
-    return { success: false, message: "Please enter your membership number and password." };
+  if (!rawNumber || !password) {
+    return { success: false, message: "Please enter your articulate number and password." };
   }
+
+  const artMatch = rawNumber.match(/^art\.?\s*(.*)$/i);
+  const strippedNumber = artMatch ? artMatch[1].trim() : rawNumber;
+  const prefixedNumber = `Art. ${strippedNumber}`;
 
   const member = await prisma.member.findFirst({
     where: {
-      membershipNumber: {
-        equals: membershipNumber,
-        mode: "insensitive",
-      },
+      OR: [
+        { membershipNumber: { equals: rawNumber, mode: "insensitive" } },
+        { membershipNumber: { equals: strippedNumber, mode: "insensitive" } },
+        { membershipNumber: { equals: prefixedNumber, mode: "insensitive" } },
+      ],
     },
   });
 
   if (!member || !member.isActive) {
-    return { success: false, message: "Invalid membership number or password." };
+    return { success: false, message: "Invalid articulate number or password." };
   }
 
   if (!member.passwordHash) {
     return {
       success: false,
       message:
-        "No password configured for this membership number yet. Please contact the club administrator to set up your initial password.",
+        "No password configured for this articulate number yet. Please contact the club administrator to set up your initial password.",
     };
   }
 
   const isValidPassword = await bcrypt.compare(password, member.passwordHash);
   if (!isValidPassword) {
-    return { success: false, message: "Invalid membership number or password." };
+    return { success: false, message: "Invalid articulate number or password." };
   }
 
   const sessionData: MemberSessionData = {
     id: member.id,
-    membershipNumber: member.membershipNumber || membershipNumber,
+    membershipNumber: member.membershipNumber || rawNumber,
     firstName: member.firstName,
     lastName: member.lastName,
     title: member.title,

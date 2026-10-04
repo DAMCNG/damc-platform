@@ -8,12 +8,14 @@ import { Badge } from "@damc/ui";
 import { AdminTable, AdminTableHead, AdminTableBody, Th, Td, EmptyState } from "@/components/admin-table";
 import { DeleteButton } from "@/components/delete-button";
 import { formatMonthDay } from "@/lib/dates";
+import { formatArticulateNumber } from "@/lib/labels";
 import { deleteMember } from "@/app/(dashboard)/members/actions";
 
 export interface MemberRowData {
   id: string;
   firstName: string;
   lastName: string;
+  membershipNumber: string | null;
   photoUrl: string | null;
   birthMonth: number | null;
   birthDay: number | null;
@@ -27,7 +29,7 @@ export function MembersTable({ members }: { members: MemberRowData[] }) {
   const fuse = React.useMemo(
     () =>
       new Fuse(members, {
-        keys: ["firstName", "lastName", "businesses.name", "businesses.category"],
+        keys: ["firstName", "lastName", "membershipNumber", "businesses.name", "businesses.category"],
         threshold: 0.35,
       }),
     [members]
@@ -43,7 +45,7 @@ export function MembersTable({ members }: { members: MemberRowData[] }) {
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search by name or business…"
+          placeholder="Search by name, articulate no. or business…"
           className="w-full rounded-full border border-ink/12 bg-white py-2 pl-10 pr-4 text-sm text-ink outline-none focus:border-gold-deep dark:border-parchment/15 dark:bg-ink-soft/40 dark:text-parchment"
         />
       </form>
@@ -51,6 +53,7 @@ export function MembersTable({ members }: { members: MemberRowData[] }) {
       <AdminTable>
         <AdminTableHead>
           <Th>Member</Th>
+          <Th>ARTICULATE NO.</Th>
           <Th>Business</Th>
           <Th>Birthday</Th>
           <Th>Status</Th>
@@ -69,6 +72,9 @@ export function MembersTable({ members }: { members: MemberRowData[] }) {
                   />
                   <span className="font-medium">{member.firstName} {member.lastName}</span>
                 </div>
+              </Td>
+              <Td className="font-mono text-xs font-semibold text-gold-deep dark:text-gold-bright">
+                {member.membershipNumber ? formatArticulateNumber(member.membershipNumber) : "—"}
               </Td>
               <Td className="text-bronze dark:text-parchment/60">
                 {member.businesses.length > 0 ? member.businesses.map((b) => b.category).join(", ") : "—"}

@@ -28,7 +28,7 @@ export default async function DirectoryPage() {
             </span>
 
             <h1 className="mt-2 text-balance font-display text-3xl font-semibold text-ink dark:text-parchment sm:text-4xl">
-              Restricted to Club Members
+              Sign in to view Directory
             </h1>
 
             <p className="mt-4 text-base leading-relaxed text-bronze dark:text-parchment/70">
@@ -40,7 +40,7 @@ export default async function DirectoryPage() {
                 href="/members/login?callbackUrl=/directory"
                 className={cn(buttonVariants({ size: "lg" }), "w-full sm:w-auto shadow-sm")}
               >
-                <span>Sign In with Membership Number</span>
+                <span>Sign In with Articulate Number</span>
                 <ArrowRight size={16} className="ml-1.5" />
               </Link>
               <Link

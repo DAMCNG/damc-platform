@@ -56,7 +56,7 @@ export default async function MembersPage() {
               Members
             </h1>
             <p className="mt-5 text-lg text-bronze dark:text-parchment/70">
-              {total} dignified, articulate men. Search by name or membership number.
+              {total} dignified, articulate men. Search by name or articulate number.
             </p>
           </Reveal>
         </Container>

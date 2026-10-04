@@ -58,8 +58,8 @@ export function MemberForm({
       <div className="rounded-xl2 border border-ink/8 bg-white p-6 shadow-card dark:border-parchment/10 dark:bg-ink-soft/40">
         <h2 className="mb-4 font-display text-base font-semibold text-ink dark:text-parchment">Membership details</h2>
         <div className="grid gap-4 sm:grid-cols-3">
-          <FormField label="Membership no." htmlFor="membershipNumber">
-            <input id="membershipNumber" name="membershipNumber" defaultValue={member?.membershipNumber ?? ""} className={inputClass} />
+          <FormField label="Articulate no: " htmlFor="membershipNumber">
+            <input id="membershipNumber" name="membershipNumber" placeholder="e.g. Art. 1" defaultValue={member?.membershipNumber ?? ""} className={inputClass} />
           </FormField>
           <FormField label="Occupation" htmlFor="occupation">
             <input id="occupation" name="occupation" defaultValue={member?.occupation ?? ""} className={inputClass} />

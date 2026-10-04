@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Globe, Lock } from "lucide-react";
 import { prisma } from "@damc/db";
 import { Container, Reveal, Badge, Card, CardContent } from "@damc/ui";
-import { formatMemberName } from "@/lib/member-name";
+import { formatMemberName, formatArticulateNumber } from "@/lib/member-name";
 import { MARITAL_STATUS_LABELS } from "@/lib/labels";
 import { MemberPhoto } from "@/components/members/member-photo";
 import { FormattedText } from "@/components/formatted-text";
@@ -62,7 +62,12 @@ export default async function MemberProfilePage({
       : { href: "/members", label: "Back to members", canGoBack: from === "members" };
 
   const details: { label: string; value: string }[] = [];
-  if (member.membershipNumber) details.push({ label: "Membership no.", value: member.membershipNumber });
+  if (member.membershipNumber) {
+    details.push({
+      label: "Articulate no: ",
+      value: formatArticulateNumber(member.membershipNumber),
+    });
+  }
   if (member.stateOfOrigin) details.push({ label: "State of origin", value: member.stateOfOrigin });
   if (member.yearJoined) details.push({ label: "Year joined", value: String(member.yearJoined) });
   if (member.maritalStatus) details.push({ label: "Marital status", value: MARITAL_STATUS_LABELS[member.maritalStatus] });

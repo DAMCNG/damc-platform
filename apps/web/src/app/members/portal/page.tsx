@@ -6,7 +6,7 @@ import { prisma } from "@damc/db";
 import { Container, Reveal, Card, Badge, buttonVariants, cn } from "@damc/ui";
 import { getMemberSession } from "@/lib/member-session";
 import { logoutMember } from "@/app/members/login/actions";
-import { formatMemberName } from "@/lib/member-name";
+import { formatMemberName, formatArticulateNumber } from "@/lib/member-name";
 import { ChangePasswordForm } from "./change-password-form";
 
 export const metadata: Metadata = {
@@ -54,7 +54,7 @@ export default async function MemberPortalPage({
                 <Badge variant="gold">DAMC Member Portal</Badge>
                 {member.membershipNumber && (
                   <span className="font-mono text-xs font-bold uppercase tracking-wider text-bronze dark:text-parchment/60">
-                    No: {member.membershipNumber}
+                    {formatArticulateNumber(member.membershipNumber)}
                   </span>
                 )}
               </div>

@@ -7,7 +7,7 @@ import { LoginForm } from "./login-form";
 
 export const metadata: Metadata = {
   title: "Members' Area Login",
-  description: "Sign in with your DAMC membership number and password to access the members' area and business directory.",
+  description: "Sign in with your DAMC articulate number and password to access the members' area and business directory.",
 };
 
 export default async function MemberLoginPage({
@@ -37,7 +37,7 @@ export default async function MemberLoginPage({
               Members&rsquo; Area
             </h1>
             <p className="mt-2 text-sm text-bronze dark:text-parchment/70">
-              Sign in with your membership number to access the business directory and private club records.
+              Sign in with your articulate number to access the business directory and private club records.
             </p>
           </div>
 

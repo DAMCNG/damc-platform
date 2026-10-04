@@ -8,6 +8,7 @@ import {
   setMemberCustomPassword,
   type MemberActionResult,
 } from "@/app/(dashboard)/members/actions";
+import { formatArticulateNumber } from "@/lib/labels";
 
 export function MemberResetPasswordCard({
   memberId,
@@ -48,9 +49,9 @@ export function MemberResetPasswordCard({
             Member Login &amp; Password
           </h2>
           <p className="mt-1 text-xs text-bronze dark:text-parchment/60">
-            Members log in with their membership number (
+            Members log in with their articulate number (
             <span className="font-mono font-semibold text-ink dark:text-parchment">
-              {membershipNumber || "Not assigned"}
+              {membershipNumber ? formatArticulateNumber(membershipNumber) : "Not assigned"}
             </span>
             ).
           </p>

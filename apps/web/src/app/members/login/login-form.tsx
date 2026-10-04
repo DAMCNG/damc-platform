@@ -50,7 +50,7 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
           htmlFor="membershipNumber"
           className="block text-xs font-semibold uppercase tracking-wider text-ink/70 dark:text-parchment/70"
         >
-          Membership Number
+          Articulate Number
         </label>
         <input
           id="membershipNumber"
@@ -58,7 +58,7 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
           type="text"
           required
           autoComplete="username"
-          placeholder="e.g. DAMC/001"
+          placeholder="e.g. Art. 1"
           className="mt-1.5 w-full rounded-xl border border-ink/12 bg-white px-4 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-bronze/40 focus:border-gold-deep focus:ring-1 focus:ring-gold-deep dark:border-parchment/15 dark:bg-ink-soft dark:text-parchment dark:placeholder:text-parchment/30 dark:focus:border-gold-bright"
         />
       </div>

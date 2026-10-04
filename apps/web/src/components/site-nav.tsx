@@ -7,6 +7,7 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Menu, X, User } from "lucide-react";
 import { cn, buttonVariants, BrandMark, ThemeToggle } from "@damc/ui";
 import { useHeroLogo } from "@/components/hero-logo-context";
+import { formatArticulateNumber } from "@/lib/member-name";
 
 const NAV_LINKS = [
   { href: "/about", label: "About" },
@@ -108,7 +109,7 @@ export function SiteNav({
               className="mr-3 flex items-center gap-1.5 rounded-full border border-gold-deep/30 bg-gold/10 px-3 py-1.5 text-xs font-semibold text-gold-deep transition-colors hover:border-gold-deep hover:bg-gold/20 dark:border-gold-bright/30 dark:bg-gold-bright/10 dark:text-gold-bright dark:hover:border-gold-bright"
             >
               <User size={13} />
-              <span>Portal ({memberSession.membershipNumber})</span>
+              <span>Portal ({formatArticulateNumber(memberSession.membershipNumber)})</span>
             </Link>
           ) : (
             <Link
@@ -157,7 +158,7 @@ export function SiteNav({
                     className="flex items-center gap-2 rounded-lg bg-gold/10 px-3 py-2 text-sm font-semibold uppercase tracking-wide text-gold-deep dark:bg-gold-bright/10 dark:text-gold-bright"
                   >
                     <User size={15} />
-                    <span>Member Portal ({memberSession.membershipNumber})</span>
+                    <span>Member Portal ({formatArticulateNumber(memberSession.membershipNumber)})</span>
                   </Link>
                 </li>
               ) : (
